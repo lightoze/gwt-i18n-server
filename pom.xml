@@ -35,9 +35,9 @@
     </properties>
 
     <scm>
-        <url>git@github.com:lightoze/gwt-i18n-server.git</url>
-        <connection>scm:git:git@github.com:lightoze/gwt-i18n-server.git</connection>
-        <developerConnection>scm:git:git@github.com:lightoze/gwt-i18n-server.git</developerConnection>
+        <url>https://github.com/lightoze/gwt-i18n-server</url>
+        <connection>scm:git:git://github.com/lightoze/gwt-i18n-server.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/lightoze/gwt-i18n-server.git</developerConnection>
     </scm>
 
     <distributionManagement>
