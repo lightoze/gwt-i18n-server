@@ -10,6 +10,6 @@ Make sure you are executing  `MessagesProxy.initialize()` before any `LocaleFact
 Call `LocaleFactory.putMessages(MyMessages.class, GWT.create(MyMessages.class))` in your `EntryPoint`.
 
 # Maven repositories
-Snapshots - https://service.teklabs.com/nexus/content/repositories/public-snapshots/
+Snapshots - <https://service.teklabs.com/nexus/content/repositories/public-snapshots/>
 
-Releases - https://service.teklabs.com/nexus/content/repositories/public-releases/
+Releases - <https://service.teklabs.com/nexus/content/repositories/public-releases/>
