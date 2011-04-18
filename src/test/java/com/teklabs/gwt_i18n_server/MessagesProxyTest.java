@@ -27,4 +27,14 @@ public class MessagesProxyTest {
         Assert.assertEquals("An 1 apple", getMessages().apples(1));
         Assert.assertEquals("2 apples", getMessages().apples(2));
     }
+
+    @Test
+    public void select() {
+        MessagesProxy.setLocale(new Locale("en"));
+        Assert.assertEquals("One selected", getMessages().select(1, "select one"));
+        Assert.assertEquals("Two selected", getMessages().select(2, "select two"));
+        Assert.assertEquals("Three selected", getMessages().select(3, "select three"));
+        Assert.assertEquals("Four selected", getMessages().select(4, "select four"));
+        Assert.assertEquals("Five selected", getMessages().select(5, "select five"));
+    }
 }
