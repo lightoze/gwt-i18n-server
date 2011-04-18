@@ -9,7 +9,7 @@ Make sure you are executing `LocaleProxy.initialize()` before any `LocaleFactory
 ### Client
 Add `<inherits name="com.teklabs.gwt_i18n_server.GwtI18nServer"/>` to your GWT XML module descriptor.
 
-Call `LocaleFactory.put(MyMessages.class, GWT.&lt;MyMessages&gt;create(MyMessages.class))` in your `EntryPoint`.
+Call `LocaleFactory.put(MyMessages.class, GWT.<MyMessages>create(MyMessages.class))` in your `EntryPoint`.
 
 # Maven repositories
 Snapshots - <https://service.teklabs.com/nexus/content/repositories/public-snapshots/>
