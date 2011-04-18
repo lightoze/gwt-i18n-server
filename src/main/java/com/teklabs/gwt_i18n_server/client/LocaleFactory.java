@@ -1,6 +1,6 @@
 package com.teklabs.gwt_i18n_server.client;
 
-import com.google.gwt.i18n.client.Messages;
+import com.google.gwt.i18n.client.LocalizableResource;
 
 import java.util.HashMap;
 
@@ -8,32 +8,38 @@ import java.util.HashMap;
  * @author Vladimir Kulev
  */
 public class LocaleFactory {
-    private static MessagesFactory factory;
-    private static HashMap<Class, Messages> messages = new HashMap<Class, Messages>();
+    private static LocaleProvider factory;
+    private static HashMap<Class, LocalizableResource> cache = new HashMap<Class, LocalizableResource>();
 
-    public static void setFactory(MessagesFactory factory) {
+    public static void setFactory(LocaleProvider factory) {
         LocaleFactory.factory = factory;
     }
 
-    public static <T extends Messages> T getMessages(Class<T> cls) {
-        //noinspection unchecked
-        T m = (T) messages.get(cls);
-        if (m == null) {
+    public static <T extends LocalizableResource> T get(Class<T> cls) {
+        T m = cls.cast(cache.get(cls));
+        if (m != null) {
+            return m;
+        }
+        synchronized (LocaleFactory.class) {
+            m = cls.cast(cache.get(cls));
+            if (m != null) {
+                return m;
+            }
             if (factory != null) {
                 m = factory.create(cls);
-                putMessages(cls, m);
+                put(cls, m);
+                return m;
             } else {
                 throw new RuntimeException("Messages not found: " + cls);
             }
         }
-        return m;
     }
 
-    public static <T extends Messages> void putMessages(Class<T> cls, T m) {
-        messages.put(cls, m);
+    public static <T extends LocalizableResource> void put(Class<T> cls, T m) {
+        cache.put(cls, m);
     }
 
-    public static interface MessagesFactory {
-        <T extends Messages> T create(Class<T> cls);
+    public static interface LocaleProvider {
+        <T extends LocalizableResource> T create(Class<T> cls);
     }
 }

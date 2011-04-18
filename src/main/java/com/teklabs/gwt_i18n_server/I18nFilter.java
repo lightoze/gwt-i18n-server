@@ -13,7 +13,7 @@ import java.util.Locale;
  */
 public class I18nFilter implements Filter {
     static {
-        MessagesProxy.initialize();
+        LocaleProxy.initialize();
     }
 
     @Override
@@ -36,11 +36,11 @@ public class I18nFilter implements Filter {
             locale = servletRequest.getLocale();
         }
 
-        MessagesProxy.setLocale(locale);
+        LocaleProxy.setLocale(locale);
         try {
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
-            MessagesProxy.clear();
+            LocaleProxy.clear();
         }
     }
 

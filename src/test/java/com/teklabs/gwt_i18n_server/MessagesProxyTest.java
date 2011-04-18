@@ -11,7 +11,7 @@ import java.util.Locale;
  */
 public class MessagesProxyTest {
     private TestMessages getMessages() {
-        return LocaleFactory.getMessages(TestMessages.class);
+        return LocaleFactory.get(TestMessages.class);
     }
 
     @Test
