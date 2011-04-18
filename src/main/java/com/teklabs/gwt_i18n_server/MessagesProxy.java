@@ -88,23 +88,23 @@ public class MessagesProxy implements InvocationHandler {
 
     private synchronized PluralRule getRule(Class<? extends PluralRule> cls) {
         try {
-        if (cls.isAssignableFrom(PluralRule.class)) {
-            PluralRule rule = rules.get(getLocale());
-            if (rule == null) {
-                rule = (PluralRule) getClassLoader().loadClass(
-                        DefaultRule.class.getCanonicalName() + '_' + getLocale().getLanguage()
-                ).newInstance();
-                rules.put(getLocale(), rule);
+            if (cls.isAssignableFrom(PluralRule.class)) {
+                PluralRule rule = rules.get(getLocale());
+                if (rule == null) {
+                    rule = (PluralRule) getClassLoader().loadClass(
+                            DefaultRule.class.getCanonicalName() + '_' + getLocale().getLanguage()
+                    ).newInstance();
+                    rules.put(getLocale(), rule);
+                }
+                return rule;
+            } else {
+                PluralRule rule = rules.get(cls);
+                if (rule == null) {
+                    rule = cls.newInstance();
+                    rules.put(cls, rule);
+                }
+                return rule;
             }
-            return rule;
-        } else {
-            PluralRule rule = rules.get(cls);
-            if (rule == null) {
-                rule = cls.newInstance();
-                rules.put(cls, rule);
-            }
-            return rule;
-        }
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -113,8 +113,7 @@ public class MessagesProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         MessageDescriptor desc = getDescriptor(method);
-        String key = desc.key;
-        String message = desc.defaultMessage;
+        List<String> forms = new ArrayList<String>();
         if (desc.pluralRule != null) {
             PluralRule rule = getRule(desc.pluralRule);
             int n = ((Number) args[desc.pluralArgIndex]).intValue();
@@ -134,11 +133,26 @@ public class MessagesProxy implements InvocationHandler {
                 }
             }
         }
-        try {
-            message = getBundle().getString(key);
-        } catch (MissingResourceException e) {
-            log.error(String.format("Unlocalized key '%s' for locale '%s'", key, getLocale()));
-        }
+        boolean def = true;
+        boolean found = false;
+        String message = null;
+        forms.add("");
+            ResourceBundle bundle = getBundle();
+            for (String form : forms) {
+                if (!found && desc.defaults.containsKey(form)) {
+                    message = desc.defaults.get(form);
+                    found = true;
+                }
+                String key = desc.key;
+                if (form.length() > 0) {
+                    key += '[' + form + ']';
+                }
+                if (bundle.containsKey(key)) {
+                    message = bundle.getString(key);
+                    break;
+                }
+            }
+//            log.error(String.format("Unlocalized key '%s' for locale '%s'", key, getLocale()));
         if (args != null) {
             for (int i = 0; i < args.length; i++) {
                 String value = args[i] == null ? "null" : args[i].toString();
@@ -155,7 +169,7 @@ public class MessagesProxy implements InvocationHandler {
             {
                 Messages.DefaultMessage annotation = method.getAnnotation(Messages.DefaultMessage.class);
                 if (annotation != null) {
-                    desc.defaultMessage = annotation.value();
+                    desc.defaults.put("", annotation.value());
                 }
             }
             {
@@ -169,29 +183,45 @@ public class MessagesProxy implements InvocationHandler {
                 if (annotation != null) {
                     desc.key = annotation.value();
                 } else {
-                    desc.key = generator.generateKey(cls.getCanonicalName(), method.getName(), desc.defaultMessage, desc.meaning);
+                    desc.key = generator.generateKey(cls.getCanonicalName(), method.getName(), desc.defaults.get(""), desc.meaning);
                 }
             }
             {
-                Messages.PluralText annotation = method.getAnnotation(Messages.PluralText.class);
-                if (annotation != null) {
-                    String[] pairs = annotation.value();
-                    for (int i = 0; (i + 1) < pairs.length; i += 2) {
-                        desc.defaultPlural.put(pairs[i], pairs[i + 1]);
+                String[] defaults = null;
+                {
+                    Messages.PluralText annotation = method.getAnnotation(Messages.PluralText.class);
+                    if (annotation != null) {
+                        defaults = annotation.value();
+                    }
+                }
+                {
+                    Messages.AlternateMessage annotation = method.getAnnotation(Messages.AlternateMessage.class);
+                    if (annotation != null) {
+                        defaults = annotation.value();
+                    }
+                }
+                if (defaults != null) {
+                    for (int i = 0; (i + 1) < defaults.length; i += 2) {
+                        desc.defaults.put(defaults[i], defaults[i + 1]);
                     }
                 }
             }
             {
-                Messages.Offset annotation = method.getAnnotation(Messages.Offset.class);
-                if (annotation != null) {
-                    desc.pluralOffset = annotation.value();
-                }
-            }
-            for (int i = 0; i < method.getParameterAnnotations().length; i++) {
-                for (Annotation annotation : method.getParameterAnnotations()[i]) {
-                    if (annotation instanceof Messages.PluralCount) {
-                        desc.pluralRule = ((Messages.PluralCount) annotation).value();
-                        desc.pluralArgIndex = i;
+                Annotation[][] args = method.getParameterAnnotations();
+                desc.args = new MessageArgument[args.length];
+                for (int i = 0; i < args.length; i++) {
+                    desc.args[i] = new MessageArgument();
+                    for (Annotation annotation : args[i]) {
+                        if (annotation instanceof Messages.PluralCount) {
+                            desc.args[i].pluralCount = true;
+                            desc.args[i].pluralRule = ((Messages.PluralCount) annotation).value();
+                        }
+                        if (annotation instanceof Messages.Offset) {
+                            desc.args[i].pluralOffset = ((Messages.Offset) annotation).value();
+                        }
+                        if (annotation instanceof Messages.Select) {
+                            desc.args[i].select = true;
+                        }
                     }
                 }
             }
@@ -203,11 +233,15 @@ public class MessagesProxy implements InvocationHandler {
     private class MessageDescriptor {
         String key;
         String meaning;
-        String defaultMessage;
-        Map<String, String> defaultPlural = new HashMap<String, String>();
-        Class<? extends PluralRule> pluralRule;
-        int pluralArgIndex;
+        Map<String, String> defaults = new HashMap<String, String>();
+        MessageArgument[] args;
+    }
+
+    private class MessageArgument {
+        boolean pluralCount;
         int pluralOffset;
+        Class<? extends PluralRule> pluralRule;
+        boolean select;
     }
 
     public static class MessagesFactory implements LocaleFactory.MessagesFactory {
