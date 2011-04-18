@@ -8,7 +8,7 @@ import javax.servlet.ServletContextListener;
  */
 public class I18nInitializer implements ServletContextListener {
     static {
-        MessagesProxy.initialize();
+        LocaleProxy.initialize();
     }
 
     @Override
