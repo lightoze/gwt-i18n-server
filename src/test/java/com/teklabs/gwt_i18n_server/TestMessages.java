@@ -12,16 +12,16 @@ public interface TestMessages extends Messages {
 
     @PluralText({
             "=0", "Zero apples",
-            "one", "An {0} apple",
+            "one", "An {0} apple"
     })
     String apples(@PluralCount int n);
 
-    @DefaultMessage("One selected")
+    @DefaultMessage("One {0} selected")
     @AlternateMessage({
             "one|select two", "Two selected",
+            "one|other", "Not two selected",
             "other|select three", "Three selected",
-            "=4|select four", "Four selected",
-            "many|other", "Five selected",
+            "=4|select four", "Four selected"
     })
     String select(@PluralCount @Offset(1) int n, @Select String select);
 }

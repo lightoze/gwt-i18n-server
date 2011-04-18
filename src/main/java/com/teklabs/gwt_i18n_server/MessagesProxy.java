@@ -110,53 +110,60 @@ public class MessagesProxy implements InvocationHandler {
         }
     }
 
+    private static List<String> expand(List<String> list, String... variants) {
+        if (list.isEmpty()) {
+            return new ArrayList<String>(Arrays.asList(variants));
+        }
+        List<String> result = new ArrayList<String>(list.size() * variants.length);
+        for (String str : list) {
+            for (String variant : variants) {
+                result.add(str + '|' + variant);
+            }
+        }
+        return result;
+    }
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         MessageDescriptor desc = getDescriptor(method);
         List<String> forms = new ArrayList<String>();
-        if (desc.pluralRule != null) {
-            PluralRule rule = getRule(desc.pluralRule);
-            int n = ((Number) args[desc.pluralArgIndex]).intValue();
-            String form;
-            if (desc.defaultPlural.containsKey("=" + n)) {
-                // we have special plural form
-                form = "=" + n;
-                n -= desc.pluralOffset;
-            } else {
-                n -= desc.pluralOffset;
-                form = rule.pluralForms()[rule.select(n)].getName();
+        for (int i = 0; i < desc.args.length; i++) {
+            MessageArgument arg = desc.args[i];
+            if (arg.pluralCount) {
+                PluralRule rule = getRule(arg.pluralRule);
+                int n = ((Number) args[i]).intValue();
+                forms = expand(forms, "=" + n, rule.pluralForms()[rule.select(n - arg.pluralOffset)].getName());
+                args[i] = n - arg.pluralOffset;
             }
-            if (!form.equals("other")) {
-                key += '[' + form + ']';
-                if (desc.defaultPlural.containsKey(form)) {
-                    message = desc.defaultPlural.get(form);
-                }
+            if (arg.select) {
+                forms = expand(forms, String.valueOf(args[i]), "other");
             }
         }
-        boolean def = true;
-        boolean found = false;
         String message = null;
         forms.add("");
-            ResourceBundle bundle = getBundle();
-            for (String form : forms) {
-                if (!found && desc.defaults.containsKey(form)) {
-                    message = desc.defaults.get(form);
-                    found = true;
-                }
-                String key = desc.key;
-                if (form.length() > 0) {
-                    key += '[' + form + ']';
-                }
-                if (bundle.containsKey(key)) {
-                    message = bundle.getString(key);
-                    break;
-                }
+        ResourceBundle bundle = getBundle();
+        for (String form : forms) {
+            if (desc.defaults.containsKey(form)) {
+                message = desc.defaults.get(form);
             }
-//            log.error(String.format("Unlocalized key '%s' for locale '%s'", key, getLocale()));
+            String key = desc.key;
+            if (form.length() > 0) {
+                key += '[' + form + ']';
+            }
+            if (bundle.containsKey(key)) {
+                message = bundle.getString(key);
+            }
+            if (message != null) {
+                break;
+            }
+        }
+        if (message == null) {
+            log.error(String.format("Unlocalized key '%s(%s)' for locale '%s'", desc.key, forms.get(0), getLocale()));
+            message = '@' + desc.key;
+        }
         if (args != null) {
             for (int i = 0; i < args.length; i++) {
-                String value = args[i] == null ? "null" : args[i].toString();
-                message = message.replaceAll("\\{" + i + "(\\,[^\\}]+)?\\}", value == null ? "" : Matcher.quoteReplacement(value));
+                message = message.replaceAll("\\{" + i + "(\\,[^\\}]+)?\\}", Matcher.quoteReplacement(String.valueOf(args[i])));
             }
         }
         return message;
