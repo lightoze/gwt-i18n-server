@@ -18,9 +18,9 @@ Releases - <https://service.teklabs.com/nexus/content/repositories/public-releas
 
 Latest release:
 <pre>
-    <dependency>
-        <groupId>com.teklabs.gwt-i18n-server</groupId>
-        <artifactId>gwt-i18n-server</artifactId>
-        <version>0.3</version>
-    </dependency>
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.teklabs.gwt-i18n-server&lt;/groupId&gt;
+        &lt;artifactId&gt;gwt-i18n-server&lt;/artifactId&gt;
+        &lt;version&gt;0.3&lt;/version&gt;
+    &lt;/dependency&gt;
 </pre>
