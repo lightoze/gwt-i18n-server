@@ -98,7 +98,7 @@
             <resource>
                 <directory>src/main/java</directory>
                 <includes>
-                    <include>com/teklabs/gwt_i18n_server/client/*.java</include>
+                    <include>com/teklabs/gwt/i18n/client/*.java</include>
                 </includes>
             </resource>
         </resources>

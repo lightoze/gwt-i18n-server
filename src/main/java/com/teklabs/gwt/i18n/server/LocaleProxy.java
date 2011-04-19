@@ -1,4 +1,4 @@
-package com.teklabs.gwt_i18n_server;
+package com.teklabs.gwt.i18n.server;
 
 import com.google.gwt.i18n.client.Constants;
 import com.google.gwt.i18n.client.ConstantsWithLookup;
@@ -6,7 +6,7 @@ import com.google.gwt.i18n.client.LocalizableResource;
 import com.google.gwt.i18n.client.Messages;
 import com.google.gwt.i18n.rebind.keygen.KeyGenerator;
 import com.google.gwt.i18n.rebind.keygen.MethodNameKeyGenerator;
-import com.teklabs.gwt_i18n_server.client.LocaleFactory;
+import com.teklabs.gwt.i18n.client.LocaleFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

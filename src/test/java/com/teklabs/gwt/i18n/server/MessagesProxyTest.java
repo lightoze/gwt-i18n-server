@@ -1,6 +1,6 @@
-package com.teklabs.gwt_i18n_server;
+package com.teklabs.gwt.i18n.server;
 
-import com.teklabs.gwt_i18n_server.client.LocaleFactory;
+import com.teklabs.gwt.i18n.client.LocaleFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
