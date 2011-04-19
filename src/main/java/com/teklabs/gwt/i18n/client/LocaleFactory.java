@@ -15,13 +15,14 @@ public class LocaleFactory {
         LocaleFactory.factory = factory;
     }
 
+    @SuppressWarnings({"unchecked"})
     public static <T extends LocalizableResource> T get(Class<T> cls) {
-        T m = cls.cast(cache.get(cls));
+        T m = (T) cache.get(cls);
         if (m != null) {
             return m;
         }
         synchronized (LocaleFactory.class) {
-            m = cls.cast(cache.get(cls));
+            m = (T) cache.get(cls);
             if (m != null) {
                 return m;
             }
