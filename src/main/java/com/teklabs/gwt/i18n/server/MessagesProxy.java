@@ -76,7 +76,7 @@ class MessagesProxy extends LocaleProxy {
         }
         String message = null;
         forms.add("");
-        ResourceBundle bundle = getBundle();
+        Properties properties = getProperties();
         for (String form : forms) {
             if (desc.defaults.containsKey(form)) {
                 message = desc.defaults.get(form);
@@ -85,8 +85,8 @@ class MessagesProxy extends LocaleProxy {
             if (form.length() > 0) {
                 key += '[' + form + ']';
             }
-            if (bundle.containsKey(key)) {
-                message = bundle.getString(key);
+            if (properties.getProperty(key) != null) {
+                message = properties.getProperty(key);
             }
             if (message != null) {
                 break;

@@ -6,7 +6,7 @@ import com.google.gwt.i18n.client.LocalizableResource;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.Properties;
 
 /**
  * @author Vladimir Kulev
@@ -47,9 +47,9 @@ public class ConstantsProxy extends LocaleProxy {
             throw new IllegalArgumentException();
         }
         ConstantDescriptor desc = getDescriptor(method);
-        ResourceBundle bundle = getBundle();
-        if (bundle.containsKey(desc.key)) {
-            return cast(bundle.getString(desc.key), method.getReturnType());
+        Properties properties = getProperties();
+        if (properties.getProperty(desc.key) != null) {
+            return cast(properties.getProperty(desc.key), method.getReturnType());
         } else {
             if (desc.defaultValue == null) {
                 log.error(String.format("Unlocalized key '%s' for locale '%s'", desc.key, getLocale()));

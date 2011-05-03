@@ -10,13 +10,16 @@ import com.teklabs.gwt.i18n.client.LocaleFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.Properties;
 
 /**
  * @author Vladimir Kulev
@@ -34,8 +37,8 @@ public abstract class LocaleProxy implements InvocationHandler {
 
     protected Class<? extends LocalizableResource> cls;
     protected Logger log;
-    private KeyGenerator generator;
-    private Map<Locale, ResourceBundle> bundles = new HashMap<Locale, ResourceBundle>();
+    private final KeyGenerator generator;
+    private final Map<Locale, Properties> properties = new HashMap<Locale, Properties>();
 
     protected LocaleProxy(Class<? extends LocalizableResource> cls) {
         this.cls = cls;
@@ -59,7 +62,7 @@ public abstract class LocaleProxy implements InvocationHandler {
         LocaleProxy handler;
         if (Messages.class.isAssignableFrom(cls)) {
             handler = new MessagesProxy(cls);
-        } else if(ConstantsWithLookup.class.isAssignableFrom(cls)) {
+        } else if (ConstantsWithLookup.class.isAssignableFrom(cls)) {
             handler = new ConstantsWithLookupProxy(cls);
         } else if (Constants.class.isAssignableFrom(cls)) {
             handler = new ConstantsProxy(cls);
@@ -82,13 +85,51 @@ public abstract class LocaleProxy implements InvocationHandler {
         locale.remove();
     }
 
-    protected synchronized ResourceBundle getBundle() {
-        ResourceBundle bundle = bundles.get(getLocale());
-        if (bundle == null) {
-            bundle = ResourceBundle.getBundle(cls.getCanonicalName(), getLocale(), getClassLoader());
-            bundles.put(getLocale(), bundle);
+    private static Locale getParentLocale(Locale locale) {
+        if (!locale.getVariant().isEmpty()) {
+            return new Locale(locale.getLanguage(), locale.getCountry());
+        } else if (!locale.getCountry().isEmpty()) {
+            return new Locale(locale.getLanguage());
+        } else {
+            return null;
         }
-        return bundle;
+    }
+
+    private void loadBundle(Locale locale) {
+        InputStream stream = getClassLoader().getResourceAsStream(cls.getCanonicalName().replace('.', '/') + (locale == null ? "" : "_" + locale.toString()) + ".properties");
+        Properties props;
+        if (stream != null) {
+            try {
+                props = new Properties(locale == null ? null : getProperties(getParentLocale(locale)));
+                props.load(new InputStreamReader(stream, "UTF-8"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            if (locale != null) {
+                props = getProperties(getParentLocale(locale));
+            } else {
+                props = new Properties();
+            }
+        }
+        properties.put(locale, props);
+    }
+
+    protected Properties getProperties(Locale locale) {
+        if (properties.containsKey(locale)) {
+            return properties.get(locale);
+        }
+        synchronized (properties) {
+            if (properties.containsKey(locale)) {
+                return properties.get(locale);
+            }
+            loadBundle(locale);
+            return properties.get(locale);
+        }
+    }
+
+    protected Properties getProperties() {
+        return getProperties(getLocale());
     }
 
     protected String getKey(Method method, String text) {
