@@ -1,12 +1,12 @@
 package com.teklabs.gwt.i18n.server;
 
-import java.util.Date;
-import java.util.Locale;
-
+import com.teklabs.gwt.i18n.client.LocaleFactory;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.teklabs.gwt.i18n.client.LocaleFactory;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author Vladimir Kulev
@@ -14,6 +14,11 @@ import com.teklabs.gwt.i18n.client.LocaleFactory;
 public class MessagesProxyTest {
     private TestMessages getMessages() {
         return LocaleFactory.get(TestMessages.class);
+    }
+    
+    @BeforeClass
+    public static void init() {
+        Locale.setDefault(Locale.ENGLISH);
     }
 
     @Test
@@ -40,9 +45,9 @@ public class MessagesProxyTest {
         Assert.assertEquals("Four selected", getMessages().select(4, "select four"));
     }
 
-	@Test
-	public void dates() {
-		MessagesProxy.setLocale(new Locale("en"));
-		Assert.assertEquals("Today is January 1, 1970", getMessages().today(new Date(0)));
-	}
+    @Test
+    public void dates() {
+        MessagesProxy.setLocale(new Locale("en"));
+        Assert.assertEquals("Today is January 1, 1970", getMessages().today(new Date(0)));
+    }
 }

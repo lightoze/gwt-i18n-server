@@ -1,19 +1,14 @@
 package com.teklabs.gwt.i18n.server;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import com.google.gwt.i18n.client.LocalizableResource;
 import com.google.gwt.i18n.client.Messages;
 import com.google.gwt.i18n.client.PluralRule;
 import com.google.gwt.i18n.client.impl.plurals.DefaultRule;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.text.MessageFormat;
+import java.util.*;
 
 /**
  * @author Vladimir Kulev
@@ -37,7 +32,7 @@ class MessagesProxy extends LocaleProxy {
                     rules.put(getLocale(), rule);
                 }
                 return rule;
-			} else {
+            } else {
                 PluralRule rule = rules.get(cls);
                 if (rule == null) {
                     rule = cls.newInstance();
@@ -68,7 +63,7 @@ class MessagesProxy extends LocaleProxy {
         MessageDescriptor desc = getDescriptor(method);
         List<String> forms = new ArrayList<String>();
         for (int i = 0; i < desc.args.length; i++) {
-			MessageArgument arg = desc.args[i];
+            MessageArgument arg = desc.args[i];
             if (arg.pluralCount) {
                 PluralRule rule = getRule(arg.pluralRule);
                 int n = ((Number) args[i]).intValue();
@@ -101,7 +96,7 @@ class MessagesProxy extends LocaleProxy {
             log.error(String.format("Unlocalized key '%s(%s)' for locale '%s'", desc.key, forms.get(0), getLocale()));
             message = '@' + desc.key;
         }
-		return MessageFormat.format(message, args);
+        return MessageFormat.format(message, args);
     }
 
     private synchronized MessageDescriptor getDescriptor(Method method) {
