@@ -1,21 +1,26 @@
 package com.teklabs.gwt.i18n.server;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import com.google.gwt.i18n.client.LocalizableResource;
 import com.google.gwt.i18n.client.Messages;
 import com.google.gwt.i18n.client.PluralRule;
 import com.google.gwt.i18n.client.impl.plurals.DefaultRule;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.regex.Matcher;
-
 /**
  * @author Vladimir Kulev
  */
 class MessagesProxy extends LocaleProxy {
-    private Map<Object, PluralRule> rules = new HashMap<Object, PluralRule>();
-    private Map<Method, MessageDescriptor> descriptors = new HashMap<Method, MessageDescriptor>();
+    private final Map<Object, PluralRule> rules = new HashMap<Object, PluralRule>();
+    private final Map<Method, MessageDescriptor> descriptors = new HashMap<Method, MessageDescriptor>();
 
     protected MessagesProxy(Class<? extends LocalizableResource> cls) {
         super(cls);
@@ -32,7 +37,7 @@ class MessagesProxy extends LocaleProxy {
                     rules.put(getLocale(), rule);
                 }
                 return rule;
-            } else {
+			} else {
                 PluralRule rule = rules.get(cls);
                 if (rule == null) {
                     rule = cls.newInstance();
@@ -63,7 +68,7 @@ class MessagesProxy extends LocaleProxy {
         MessageDescriptor desc = getDescriptor(method);
         List<String> forms = new ArrayList<String>();
         for (int i = 0; i < desc.args.length; i++) {
-            MessageArgument arg = desc.args[i];
+			MessageArgument arg = desc.args[i];
             if (arg.pluralCount) {
                 PluralRule rule = getRule(arg.pluralRule);
                 int n = ((Number) args[i]).intValue();
@@ -96,12 +101,7 @@ class MessagesProxy extends LocaleProxy {
             log.error(String.format("Unlocalized key '%s(%s)' for locale '%s'", desc.key, forms.get(0), getLocale()));
             message = '@' + desc.key;
         }
-        if (args != null) {
-            for (int i = 0; i < args.length; i++) {
-                message = message.replaceAll("\\{" + i + "(\\,[^\\}]+)?\\}", Matcher.quoteReplacement(String.valueOf(args[i])));
-            }
-        }
-        return message;
+		return MessageFormat.format(message, args);
     }
 
     private synchronized MessageDescriptor getDescriptor(Method method) {

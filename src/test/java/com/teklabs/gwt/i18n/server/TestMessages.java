@@ -1,5 +1,7 @@
 package com.teklabs.gwt.i18n.server;
 
+import java.util.Date;
+
 import com.google.gwt.i18n.client.LocalizableResource;
 import com.google.gwt.i18n.client.Messages;
 
@@ -24,4 +26,8 @@ public interface TestMessages extends Messages {
             "=4|select four", "Four selected"
     })
     String select(@PluralCount @Offset(1) int n, @Select String select);
+
+	@DefaultMessage("Today is {0,date,long}")
+	String today(Date today);
+
 }
