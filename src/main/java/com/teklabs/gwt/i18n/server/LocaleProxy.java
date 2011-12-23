@@ -4,8 +4,10 @@ import com.google.gwt.i18n.client.Constants;
 import com.google.gwt.i18n.client.ConstantsWithLookup;
 import com.google.gwt.i18n.client.LocalizableResource;
 import com.google.gwt.i18n.client.Messages;
-import com.google.gwt.i18n.rebind.keygen.KeyGenerator;
-import com.google.gwt.i18n.rebind.keygen.MethodNameKeyGenerator;
+import com.google.gwt.i18n.server.GwtLocaleFactoryImpl;
+import com.google.gwt.i18n.server.impl.ReflectionMessage;
+import com.google.gwt.i18n.server.impl.ReflectionMessageInterface;
+import com.google.gwt.i18n.shared.GwtLocaleFactory;
 import com.teklabs.gwt.i18n.client.LocaleFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,7 @@ import java.util.Properties;
  */
 public abstract class LocaleProxy implements InvocationHandler {
     private static ThreadLocal<Locale> locale = new ThreadLocal<Locale>();
+    private static GwtLocaleFactory gwtLocaleFactory = new GwtLocaleFactoryImpl();
 
     static {
         LocaleFactory.setFactory(new LocaleProxyProvider());
@@ -37,21 +40,12 @@ public abstract class LocaleProxy implements InvocationHandler {
 
     protected Class<? extends LocalizableResource> cls;
     protected Logger log;
-    private final KeyGenerator generator;
+    private final ReflectionMessageInterface messageInterface;
     private final Map<Locale, Properties> properties = new HashMap<Locale, Properties>();
 
     protected LocaleProxy(Class<? extends LocalizableResource> cls) {
         this.cls = cls;
-        try {
-            LocalizableResource.GenerateKeys annotation = cls.getAnnotation(LocalizableResource.GenerateKeys.class);
-            if (annotation != null) {
-                generator = (KeyGenerator) Class.forName(annotation.value()).newInstance();
-            } else {
-                generator = new MethodNameKeyGenerator();
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
+        messageInterface = new ReflectionMessageInterface(gwtLocaleFactory, cls);
     }
 
     protected static ClassLoader getClassLoader() {
@@ -132,22 +126,8 @@ public abstract class LocaleProxy implements InvocationHandler {
         return getProperties(getLocale());
     }
 
-    protected String getKey(Method method, String text) {
-        String meaning = null;
-        {
-            LocalizableResource.Meaning annotation = method.getAnnotation(LocalizableResource.Meaning.class);
-            if (annotation != null) {
-                meaning = annotation.value();
-            }
-        }
-        {
-            LocalizableResource.Key annotation = method.getAnnotation(LocalizableResource.Key.class);
-            if (annotation != null) {
-                return annotation.value();
-            } else {
-                return generator.generateKey(cls.getCanonicalName(), method.getName(), text, meaning);
-            }
-        }
+    protected String getKey(Method method) {
+        return new ReflectionMessage(gwtLocaleFactory, messageInterface, method).getKey();
     }
 
     public static class LocaleProxyProvider implements LocaleFactory.LocaleProvider {

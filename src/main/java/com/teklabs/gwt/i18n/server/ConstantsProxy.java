@@ -62,7 +62,7 @@ public class ConstantsProxy extends LocaleProxy {
         ConstantDescriptor desc = descriptors.get(method);
         if (desc == null) {
             desc = new ConstantDescriptor();
-            desc.key = getKey(method, null);
+            desc.key = getKey(method);
             {
                 Constants.DefaultBooleanValue annotation = method.getAnnotation(Constants.DefaultBooleanValue.class);
                 if (annotation != null) {

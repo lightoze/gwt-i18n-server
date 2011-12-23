@@ -109,7 +109,7 @@ class MessagesProxy extends LocaleProxy {
                     desc.defaults.put("", annotation.value());
                 }
             }
-            desc.key = getKey(method, desc.defaults.get(""));
+            desc.key = getKey(method);
             {
                 String[] defaults = null;
                 {

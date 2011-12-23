@@ -41,7 +41,7 @@ public class MessagesProxyTest {
         Assert.assertEquals("One 0 selected", getMessages().select(1, "select one"));
         Assert.assertEquals("Two selected", getMessages().select(2, "select two"));
         Assert.assertEquals("Not two selected", getMessages().select(2, "not select"));
-        Assert.assertEquals("Three selected", getMessages().select(3, "select three"));
+        Assert.assertEquals("Three selected localized", getMessages().select(3, "select three"));
         Assert.assertEquals("Four selected", getMessages().select(4, "select four"));
     }
 
