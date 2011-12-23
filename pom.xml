@@ -3,7 +3,7 @@
 
     <groupId>com.teklabs.gwt-i18n-server</groupId>
     <artifactId>gwt-i18n-server</artifactId>
-    <version>0.7-SNAPSHOT</version>
+    <version>0.7</version>
     <packaging>jar</packaging>
 
     <name>GWT I18n server-side implementation</name>
