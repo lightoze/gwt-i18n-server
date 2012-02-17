@@ -19,9 +19,11 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author Vladimir Kulev
@@ -89,8 +91,22 @@ public abstract class LocaleProxy implements InvocationHandler {
         }
     }
 
-    private void loadBundle(Locale locale) {
-        InputStream stream = getClassLoader().getResourceAsStream(cls.getCanonicalName().replace('.', '/') + (locale == null ? "" : "_" + locale.toString()) + ".properties");
+    private void walkInheritanceTree(Class<?> clazz, Set<Class<?>> seenClasses) {
+        if (seenClasses.contains(clazz))
+            return;
+
+        seenClasses.add(clazz);
+
+        if (clazz.getSuperclass() != null) {
+            walkInheritanceTree(clazz.getSuperclass(), seenClasses);
+        }
+        for (Class<?> iface : clazz.getInterfaces()) {
+            walkInheritanceTree(iface, seenClasses);
+        }
+    }
+
+    private void loadBundle(Class clazz, Locale locale) {
+        InputStream stream = getClassLoader().getResourceAsStream(clazz.getCanonicalName().replace('.', '/') + (locale == null ? "" : "_" + locale.toString()) + ".properties");
         Properties props;
         if (stream != null) {
             try {
@@ -101,12 +117,27 @@ public abstract class LocaleProxy implements InvocationHandler {
             }
         } else {
             if (locale != null) {
-                props = getProperties(getParentLocale(locale));
+                //props = getProperties(getParentLocale(locale));
+                props = new Properties();
             } else {
                 props = new Properties();
             }
         }
-        properties.put(locale, props);
+
+        if (properties.containsKey(locale)) {
+            properties.get(locale).putAll(props);
+        } else {
+            properties.put(locale, props);
+        }
+    }
+
+    private void loadBundles(Locale locale) {
+        Set<Class<?>> seenClasses = new LinkedHashSet<Class<?>>();
+        walkInheritanceTree(cls, seenClasses);
+
+        for(Class clazz : seenClasses) {
+            loadBundle(clazz, locale);
+        }
     }
 
     protected Properties getProperties(Locale locale) {
@@ -117,7 +148,7 @@ public abstract class LocaleProxy implements InvocationHandler {
             if (properties.containsKey(locale)) {
                 return properties.get(locale);
             }
-            loadBundle(locale);
+            loadBundles(locale);
             return properties.get(locale);
         }
     }
