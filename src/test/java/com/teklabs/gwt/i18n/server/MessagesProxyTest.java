@@ -50,4 +50,12 @@ public class MessagesProxyTest {
         MessagesProxy.setLocale(new Locale("en"));
         Assert.assertEquals("Today is January 1, 1970", getMessages().today(new Date(0)));
     }
+
+    @Test
+    public void inheritance() {
+        MessagesProxy.setLocale(new Locale("fi"));
+        Assert.assertEquals("Perintö 1", getMessages().inheritance1());
+        Assert.assertEquals("Perintö 2", getMessages().inheritance2());
+        Assert.assertEquals("Inheritance 3", getMessages().inheritance3());
+    }
 }

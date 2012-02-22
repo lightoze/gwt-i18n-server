@@ -7,6 +7,7 @@ import com.google.gwt.i18n.client.Messages;
 import com.google.gwt.i18n.server.GwtLocaleFactoryImpl;
 import com.google.gwt.i18n.server.impl.ReflectionMessage;
 import com.google.gwt.i18n.server.impl.ReflectionMessageInterface;
+import com.google.gwt.i18n.shared.GwtLocale;
 import com.google.gwt.i18n.shared.GwtLocaleFactory;
 import com.teklabs.gwt.i18n.client.LocaleFactory;
 import org.slf4j.Logger;
@@ -18,8 +19,11 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -91,52 +95,67 @@ public abstract class LocaleProxy implements InvocationHandler {
         }
     }
 
-    private void walkInheritanceTree(Class<?> clazz, Set<Class<?>> seenClasses) {
+    private List<Locale> getLocaleSearchList(Locale locale) {
+        List<Locale> locales = new ArrayList<Locale>();
+        locales.add(locale);
+
+        while (locale != null) {
+            locale = getParentLocale(locale);
+            locales.add(locale);
+        }
+
+        return locales;
+    }
+
+    private void walkInheritanceTree(Class<?> clazz, List<Class<?>> classes, Set<Class<?>> seenClasses) {
         if (seenClasses.contains(clazz))
             return;
 
         seenClasses.add(clazz);
+        classes.add(clazz);
 
         if (clazz.getSuperclass() != null) {
-            walkInheritanceTree(clazz.getSuperclass(), seenClasses);
+            walkInheritanceTree(clazz.getSuperclass(), classes, seenClasses);
         }
         for (Class<?> iface : clazz.getInterfaces()) {
-            walkInheritanceTree(iface, seenClasses);
+            walkInheritanceTree(iface, classes, seenClasses);
         }
     }
 
-    private void loadBundle(Class clazz, Locale locale) {
-        InputStream stream = getClassLoader().getResourceAsStream(clazz.getCanonicalName().replace('.', '/') + (locale == null ? "" : "_" + locale.toString()) + ".properties");
-        Properties props;
+    private Properties loadBundle(Class clazz, Locale locale) {
+        InputStream stream = getClassLoader().getResourceAsStream(clazz.getCanonicalName().replace('.', '/') + (locale == null ? "" : "_" + locale) + ".properties");
+        Properties props = new Properties();
+
         if (stream != null) {
             try {
-                props = new Properties(locale == null ? null : getProperties(getParentLocale(locale)));
                 props.load(new InputStreamReader(stream, "UTF-8"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        } else {
-            if (locale != null) {
-                //props = getProperties(getParentLocale(locale));
-                props = new Properties();
-            } else {
-                props = new Properties();
-            }
         }
 
-        if (properties.containsKey(locale)) {
-            properties.get(locale).putAll(props);
-        } else {
-            properties.put(locale, props);
-        }
+        return props;
     }
 
     private void loadBundles(Locale locale) {
-        Set<Class<?>> seenClasses = new LinkedHashSet<Class<?>>();
-        walkInheritanceTree(cls, seenClasses);
+        Set<Class<?>> seenClasses = new HashSet<Class<?>>();
+        List<Class<?>> classes = new ArrayList<Class<?>>();
+        List<Locale> locales = getLocaleSearchList(locale);
 
-        for(Class clazz : seenClasses) {
-            loadBundle(clazz, locale);
+        walkInheritanceTree(cls, classes, seenClasses);
+
+        Collections.reverse(classes);
+        Collections.reverse(locales);
+
+        for(Locale loc : locales) {
+            for(Class clazz : classes) {
+                Properties props = loadBundle(clazz, loc);
+                if (properties.containsKey(locale)) {
+                    properties.get(locale).putAll(props);
+                } else {
+                    properties.put(locale, props);
+                }
+            }
         }
     }
 

@@ -30,4 +30,10 @@ public interface TestMessages extends Messages {
     @DefaultMessage("Today is {0,date,long}")
     String today(Date today);
 
+    String inheritance1();
+
+    String inheritance2();
+
+    String inheritance3();
+
 }
