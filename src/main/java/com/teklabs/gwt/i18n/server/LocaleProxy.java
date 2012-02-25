@@ -134,16 +134,13 @@ public abstract class LocaleProxy implements InvocationHandler {
         Collections.reverse(classes);
         Collections.reverse(locales);
 
+        Properties props = new Properties();
         for (Locale loc : locales) {
             for (Class clazz : classes) {
-                Properties props = loadBundle(clazz, loc);
-                if (properties.containsKey(locale)) {
-                    properties.get(locale).putAll(props);
-                } else {
-                    properties.put(locale, props);
-                }
+                props.putAll(loadBundle(clazz, loc));
             }
         }
+        properties.put(locale, props);
     }
 
     protected Properties getProperties(Locale locale) {
