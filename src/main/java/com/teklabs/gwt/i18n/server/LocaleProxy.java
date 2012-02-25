@@ -7,7 +7,6 @@ import com.google.gwt.i18n.client.Messages;
 import com.google.gwt.i18n.server.GwtLocaleFactoryImpl;
 import com.google.gwt.i18n.server.impl.ReflectionMessage;
 import com.google.gwt.i18n.server.impl.ReflectionMessageInterface;
-import com.google.gwt.i18n.shared.GwtLocale;
 import com.google.gwt.i18n.shared.GwtLocaleFactory;
 import com.teklabs.gwt.i18n.client.LocaleFactory;
 import org.slf4j.Logger;
@@ -19,22 +18,15 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Vladimir Kulev
  */
 public abstract class LocaleProxy implements InvocationHandler {
-    private static ThreadLocal<Locale> locale = new ThreadLocal<Locale>();
-    private static GwtLocaleFactory gwtLocaleFactory = new GwtLocaleFactoryImpl();
+    private static final ThreadLocal<Locale> locale = new ThreadLocal<Locale>();
+    private static final GwtLocaleFactory gwtLocaleFactory = new GwtLocaleFactoryImpl();
+    private static final Class<LocalizableResource> LOCALIZABLE_RESOURCE = LocalizableResource.class;
 
     static {
         LocaleFactory.setFactory(new LocaleProxyProvider());
@@ -107,21 +99,6 @@ public abstract class LocaleProxy implements InvocationHandler {
         return locales;
     }
 
-    private void walkInheritanceTree(Class<?> clazz, List<Class<?>> classes, Set<Class<?>> seenClasses) {
-        if (seenClasses.contains(clazz))
-            return;
-
-        seenClasses.add(clazz);
-        classes.add(clazz);
-
-        if (clazz.getSuperclass() != null) {
-            walkInheritanceTree(clazz.getSuperclass(), classes, seenClasses);
-        }
-        for (Class<?> iface : clazz.getInterfaces()) {
-            walkInheritanceTree(iface, classes, seenClasses);
-        }
-    }
-
     private Properties loadBundle(Class clazz, Locale locale) {
         InputStream stream = getClassLoader().getResourceAsStream(clazz.getCanonicalName().replace('.', '/') + (locale == null ? "" : "_" + locale) + ".properties");
         Properties props = new Properties();
@@ -138,17 +115,23 @@ public abstract class LocaleProxy implements InvocationHandler {
     }
 
     private void loadBundles(Locale locale) {
-        Set<Class<?>> seenClasses = new HashSet<Class<?>>();
-        List<Class<?>> classes = new ArrayList<Class<?>>();
         List<Locale> locales = getLocaleSearchList(locale);
 
-        walkInheritanceTree(cls, classes, seenClasses);
+        List<Class<?>> classes = new ArrayList<Class<?>>();
+        classes.add(cls);
+        for (int i = 0; i < classes.size(); i++) {
+            for (Class<?> cls : classes.get(i).getInterfaces()) {
+                if (LOCALIZABLE_RESOURCE.isAssignableFrom(cls) && !classes.contains(cls)) {
+                    classes.add(cls);
+                }
+            }
+        }
 
         Collections.reverse(classes);
         Collections.reverse(locales);
 
-        for(Locale loc : locales) {
-            for(Class clazz : classes) {
+        for (Locale loc : locales) {
+            for (Class clazz : classes) {
                 Properties props = loadBundle(clazz, loc);
                 if (properties.containsKey(locale)) {
                     properties.get(locale).putAll(props);
