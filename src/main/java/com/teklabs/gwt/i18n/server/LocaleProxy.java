@@ -87,7 +87,7 @@ public abstract class LocaleProxy implements InvocationHandler {
         }
     }
 
-    private List<Locale> getLocaleSearchList(Locale locale) {
+    private static List<Locale> getLocaleSearchList(Locale locale) {
         List<Locale> locales = new ArrayList<Locale>();
         locales.add(locale);
 
@@ -97,6 +97,19 @@ public abstract class LocaleProxy implements InvocationHandler {
         }
 
         return locales;
+    }
+
+    private static List<Class<?>> getClassSearchList(Class<?> mainClass) {
+        List<Class<?>> classes = new ArrayList<Class<?>>();
+        classes.add(mainClass);
+        for (int i = 0; i < classes.size(); i++) {
+            for (Class<?> cls : classes.get(i).getInterfaces()) {
+                if (LOCALIZABLE_RESOURCE.isAssignableFrom(cls) && !classes.contains(cls)) {
+                    classes.add(cls);
+                }
+            }
+        }
+        return classes;
     }
 
     private Properties loadBundle(Class clazz, Locale locale) {
@@ -116,16 +129,7 @@ public abstract class LocaleProxy implements InvocationHandler {
 
     private void loadBundles(Locale locale) {
         List<Locale> locales = getLocaleSearchList(locale);
-
-        List<Class<?>> classes = new ArrayList<Class<?>>();
-        classes.add(cls);
-        for (int i = 0; i < classes.size(); i++) {
-            for (Class<?> cls : classes.get(i).getInterfaces()) {
-                if (LOCALIZABLE_RESOURCE.isAssignableFrom(cls) && !classes.contains(cls)) {
-                    classes.add(cls);
-                }
-            }
-        }
+        List<Class<?>> classes = getClassSearchList(cls);
 
         Collections.reverse(classes);
         Collections.reverse(locales);
