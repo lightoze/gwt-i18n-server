@@ -7,6 +7,7 @@ import com.google.gwt.i18n.client.Messages;
 import com.google.gwt.i18n.server.GwtLocaleFactoryImpl;
 import com.google.gwt.i18n.server.impl.ReflectionMessage;
 import com.google.gwt.i18n.server.impl.ReflectionMessageInterface;
+import com.google.gwt.i18n.shared.GwtLocale;
 import com.google.gwt.i18n.shared.GwtLocaleFactory;
 import com.teklabs.gwt.i18n.client.LocaleFactory;
 import org.slf4j.Logger;
@@ -77,25 +78,12 @@ public abstract class LocaleProxy implements InvocationHandler {
         locale.remove();
     }
 
-    private static Locale getParentLocale(Locale locale) {
-        if (!locale.getVariant().isEmpty()) {
-            return new Locale(locale.getLanguage(), locale.getCountry());
-        } else if (!locale.getCountry().isEmpty()) {
-            return new Locale(locale.getLanguage());
-        } else {
-            return null;
+    private static List<String> getLocaleSearchList(Locale locale) {
+        GwtLocale gwtLocale = gwtLocaleFactory.fromComponents(locale.getLanguage(), null, locale.getCountry(), locale.getVariant());
+        List<String> locales = new ArrayList<String>();
+        for (GwtLocale loc : gwtLocale.getCompleteSearchList()) {
+            locales.add(loc.isDefault() ? null : loc.toString());
         }
-    }
-
-    private static List<Locale> getLocaleSearchList(Locale locale) {
-        List<Locale> locales = new ArrayList<Locale>();
-        locales.add(locale);
-
-        while (locale != null) {
-            locale = getParentLocale(locale);
-            locales.add(locale);
-        }
-
         return locales;
     }
 
@@ -112,7 +100,7 @@ public abstract class LocaleProxy implements InvocationHandler {
         return classes;
     }
 
-    private Properties loadBundle(Class clazz, Locale locale) {
+    private Properties loadBundle(Class clazz, String locale) {
         InputStream stream = getClassLoader().getResourceAsStream(clazz.getCanonicalName().replace('.', '/') + (locale == null ? "" : "_" + locale) + ".properties");
         Properties props = new Properties();
 
@@ -128,14 +116,14 @@ public abstract class LocaleProxy implements InvocationHandler {
     }
 
     private void loadBundles(Locale locale) {
-        List<Locale> locales = getLocaleSearchList(locale);
+        List<String> locales = getLocaleSearchList(locale);
         List<Class<?>> classes = getClassSearchList(cls);
 
         Collections.reverse(classes);
         Collections.reverse(locales);
 
         Properties props = new Properties();
-        for (Locale loc : locales) {
+        for (String loc : locales) {
             for (Class clazz : classes) {
                 props.putAll(loadBundle(clazz, loc));
             }

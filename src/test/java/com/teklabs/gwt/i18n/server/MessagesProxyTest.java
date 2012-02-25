@@ -23,7 +23,7 @@ public class MessagesProxyTest {
 
     @Test
     public void simple() {
-        MessagesProxy.setLocale(new Locale("fi", "FI", "001"));
+        MessagesProxy.setLocale(new Locale("fi", "FI", "var"));
         Assert.assertEquals("Simple текст", getMessages().simple());
     }
 
