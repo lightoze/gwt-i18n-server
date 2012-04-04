@@ -3,6 +3,7 @@ package com.teklabs.gwt.i18n.server;
 import org.apache.commons.lang.LocaleUtils;
 
 import javax.servlet.*;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -34,6 +35,22 @@ public class I18nFilter implements Filter {
         }
         if (locale == null) {
             locale = servletRequest.getLocale();
+        }
+
+        // if locale still not set, try to get it from cookies
+        if (locale == null) {
+            Cookie[] cookies = req.getCookies();
+            String localeStr = null;
+            if (cookies != null) {
+                for (Cookie curr : cookies) {
+                    if (curr.getName().equals("locale")) {
+                        localeStr = curr.getValue();
+                    }
+                }
+            }
+            if (localeStr != null) {
+                locale = LocaleUtils.toLocale(localeStr);
+            }
         }
 
         LocaleProxy.setLocale(locale);
