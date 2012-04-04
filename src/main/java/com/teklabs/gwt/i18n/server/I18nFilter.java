@@ -40,16 +40,13 @@ public class I18nFilter implements Filter {
         // if locale still not set, try to get it from cookies
         if (locale == null) {
             Cookie[] cookies = req.getCookies();
-            String localeStr = null;
             if (cookies != null) {
                 for (Cookie curr : cookies) {
                     if (curr.getName().equals("locale")) {
-                        localeStr = curr.getValue();
+                        locale = LocaleUtils.toLocale(curr.getValue());
+                        break;
                     }
                 }
-            }
-            if (localeStr != null) {
-                locale = LocaleUtils.toLocale(localeStr);
             }
         }
 
