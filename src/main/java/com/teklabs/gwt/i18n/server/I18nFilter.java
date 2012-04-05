@@ -33,9 +33,6 @@ public class I18nFilter implements Filter {
                 locale = (Locale) session.getAttribute("locale");
             }
         }
-        if (locale == null) {
-            locale = servletRequest.getLocale();
-        }
 
         // if locale still not set, try to get it from cookies
         if (locale == null) {
@@ -48,6 +45,10 @@ public class I18nFilter implements Filter {
                     }
                 }
             }
+        }
+
+        if (locale == null) {
+            locale = servletRequest.getLocale();
         }
 
         LocaleProxy.setLocale(locale);
