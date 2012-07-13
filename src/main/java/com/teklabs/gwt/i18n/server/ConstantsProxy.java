@@ -43,19 +43,28 @@ public class ConstantsProxy extends LocaleProxy {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if (args != null) {
-            throw new IllegalArgumentException();
-        }
         ConstantDescriptor desc = getDescriptor(method);
         Properties properties = getProperties();
-        if (properties.getProperty(desc.key) != null) {
-            return cast(properties.getProperty(desc.key), method.getReturnType());
+        
+        Object returnValue;
+        if (properties.containsKey(desc.key) ) {
+            returnValue = cast(properties.getProperty(desc.key), method.getReturnType());
         } else {
             if (desc.defaultValue == null) {
                 log.error(String.format("Unlocalized key '%s' for locale '%s'", desc.key, getLocale()));
             }
-            return desc.defaultValue;
+            returnValue = desc.defaultValue;
         }
+        
+        if(returnValue instanceof String) {
+            return String.format( returnValue.toString(), args );
+        }
+
+        if (args != null) {
+            throw new IllegalArgumentException();
+        }
+
+        return returnValue;
     }
 
     private synchronized ConstantDescriptor getDescriptor(Method method) {

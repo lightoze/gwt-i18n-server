@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -64,7 +65,6 @@
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
             <version>${version.gwt}</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Commons -->
@@ -136,6 +136,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-source-plugin</artifactId>
+                        <version>2.1.2</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -148,29 +149,60 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <version>2.1</version>
-                        <executions>
-                            <execution>
-                                <id>unpack</id>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>unpack</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>com.google.gwt</groupId>
-                                            <artifactId>gwt-user</artifactId>
-                                            <overWrite>false</overWrite>
-                                        </artifactItem>
-                                    </artifactItems>
-                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
-                                    <includes>com/google/gwt/i18n/**</includes>
-                                    <excludes>**/*.java,**/*.gwt.xml</excludes>
-                                </configuration>
-                            </execution>
-                        </executions>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-shade-plugin</artifactId>
+                      <version>1.7</version>
+                      <executions>
+                        <execution>
+                          <phase>package</phase>
+                          <goals>
+                            <goal>shade</goal>
+                          </goals>
+                          <configuration>
+                            <artifactSet>
+                              <includes>
+                                <include>com.google.gwt:gwt-user</include>
+                              </includes>
+                            </artifactSet>
+                            <filters>
+                              <filter>
+                                <artifact>com.google.gwt:gwt-user</artifact>
+                                <includes>
+                                  <include>com/google/gwt/i18n/**</include>
+                                </includes>
+                                <excludes>
+                                  <exclude>**/*.java</exclude>
+                                  <exclude>**/*.gwt.xml</exclude>
+                                </excludes>
+                              </filter>
+                            </filters>
+                            <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+                          </configuration>
+                        </execution>
+                      </executions>
+                    </plugin>
+                    <plugin>
+                      <groupId>org.codehaus.mojo</groupId>
+                      <artifactId>build-helper-maven-plugin</artifactId>
+                      <version>1.7</version>
+                      <executions>
+                        <execution>
+                          <id>attach-artifacts</id>
+                          <phase>package</phase>
+                          <goals>
+                            <goal>attach-artifact</goal>
+                          </goals>
+                          <configuration>
+                            <artifacts>
+                              <artifact>
+                                <file>${project.build.directory}/original-${project.build.finalName}.jar</file>
+                                <type>jar</type>
+                                <classifier>original</classifier>
+                              </artifact>
+                            </artifacts>
+                          </configuration>
+                        </execution>
+                      </executions>
                     </plugin>
                 </plugins>
             </build>

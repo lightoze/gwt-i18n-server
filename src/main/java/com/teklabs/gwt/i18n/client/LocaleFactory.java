@@ -1,6 +1,7 @@
 package com.teklabs.gwt.i18n.client;
 
 import com.google.gwt.i18n.client.LocalizableResource;
+import com.teklabs.gwt.i18n.server.LocaleProxy;
 
 import java.util.HashMap;
 
@@ -26,13 +27,14 @@ public class LocaleFactory {
             if (m != null) {
                 return m;
             }
-            if (factory != null) {
-                m = factory.create(cls);
-                put(cls, m);
-                return m;
-            } else {
-                throw new RuntimeException("Messages not found: " + cls);
+
+            if (factory == null) {
+                //uses default factory if dev do not pick one
+                LocaleProxy.initialize();
             }
+            m = factory.create(cls);
+            put(cls, m);
+            return m;
         }
     }
 

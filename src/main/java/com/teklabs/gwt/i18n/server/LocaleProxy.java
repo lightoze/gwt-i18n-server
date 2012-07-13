@@ -29,12 +29,9 @@ public abstract class LocaleProxy implements InvocationHandler {
     private static final GwtLocaleFactory gwtLocaleFactory = new GwtLocaleFactoryImpl();
     private static final Class<LocalizableResource> LOCALIZABLE_RESOURCE = LocalizableResource.class;
 
-    static {
-        LocaleFactory.setFactory(new LocaleProxyProvider());
-    }
-
     public static void initialize() {
         // call this before using LocaleFactory
+        LocaleFactory.setFactory(new LocaleProxyProvider());
     }
 
     protected Class<? extends LocalizableResource> cls;
