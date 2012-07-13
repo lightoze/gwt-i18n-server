@@ -28,6 +28,12 @@ public class MessagesProxyTest {
     }
 
     @Test
+    public void lookup() {
+        MessagesProxy.setLocale(new Locale("fi", "FI", "var"));
+        Assert.assertEquals("Simple текст", getMessages().getString("simple"));
+    }
+
+    @Test
     public void plural() {
         MessagesProxy.setLocale(new Locale("en"));
         Assert.assertEquals("No apples", getMessages().apples(0));

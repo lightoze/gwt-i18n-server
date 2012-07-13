@@ -2,8 +2,10 @@ package com.teklabs.gwt.i18n.server;
 
 import com.google.gwt.i18n.client.Constants;
 import com.google.gwt.i18n.client.LocalizableResource;
+import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -14,8 +16,8 @@ import java.util.Properties;
 public class ConstantsProxy extends LocaleProxy {
     private Map<Method, ConstantDescriptor> descriptors = new HashMap<Method, ConstantDescriptor>();
 
-    protected ConstantsProxy(Class<? extends LocalizableResource> cls) {
-        super(cls);
+    protected ConstantsProxy(Class<? extends LocalizableResource> cls, Logger log) {
+        super(cls, log);
     }
 
     protected static Object cast(String value, Class target) {
@@ -45,9 +47,9 @@ public class ConstantsProxy extends LocaleProxy {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         ConstantDescriptor desc = getDescriptor(method);
         Properties properties = getProperties();
-        
+
         Object returnValue;
-        if (properties.containsKey(desc.key) ) {
+        if (properties.containsKey(desc.key)) {
             returnValue = cast(properties.getProperty(desc.key), method.getReturnType());
         } else {
             if (desc.defaultValue == null) {
@@ -55,9 +57,9 @@ public class ConstantsProxy extends LocaleProxy {
             }
             returnValue = desc.defaultValue;
         }
-        
-        if(returnValue instanceof String) {
-            return String.format( returnValue.toString(), args );
+
+        if (returnValue instanceof String && args != null) {
+            return MessageFormat.format(returnValue.toString(), args);
         }
 
         if (args != null) {

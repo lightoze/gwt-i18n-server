@@ -4,6 +4,7 @@ import com.google.gwt.i18n.client.LocalizableResource;
 import com.google.gwt.i18n.client.Messages;
 import com.google.gwt.i18n.client.PluralRule;
 import com.google.gwt.i18n.client.impl.plurals.DefaultRule;
+import org.slf4j.Logger;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -17,8 +18,8 @@ class MessagesProxy extends LocaleProxy {
     private final Map<Object, PluralRule> rules = new HashMap<Object, PluralRule>();
     private final Map<Method, MessageDescriptor> descriptors = new HashMap<Method, MessageDescriptor>();
 
-    protected MessagesProxy(Class<? extends LocalizableResource> cls) {
-        super(cls);
+    protected MessagesProxy(Class<? extends LocalizableResource> cls, Logger log) {
+        super(cls, log);
     }
 
     private synchronized PluralRule getRule(Class<? extends PluralRule> cls) {

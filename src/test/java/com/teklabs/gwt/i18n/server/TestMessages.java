@@ -1,5 +1,6 @@
 package com.teklabs.gwt.i18n.server;
 
+import com.google.gwt.i18n.client.ConstantsWithLookup;
 import com.google.gwt.i18n.client.LocalizableResource;
 import com.google.gwt.i18n.client.Messages;
 
@@ -9,7 +10,7 @@ import java.util.Date;
  * @author Vladimir Kulev
  */
 @LocalizableResource.Generate(format = "com.google.gwt.i18n.rebind.format.PropertiesFormat")
-public interface TestMessages extends Messages {
+public interface TestMessages extends Messages, ConstantsWithLookup {
     String simple();
 
     @PluralText({

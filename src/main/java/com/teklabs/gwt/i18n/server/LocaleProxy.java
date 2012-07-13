@@ -42,8 +42,9 @@ public abstract class LocaleProxy implements InvocationHandler {
     private final ReflectionMessageInterface messageInterface;
     private final Map<Locale, Properties> properties = new HashMap<Locale, Properties>();
 
-    protected LocaleProxy(Class<? extends LocalizableResource> cls) {
+    protected LocaleProxy(Class<? extends LocalizableResource> cls, Logger log) {
         this.cls = cls;
+        this.log = log;
         messageInterface = new ReflectionMessageInterface(gwtLocaleFactory, cls);
     }
 
@@ -52,17 +53,17 @@ public abstract class LocaleProxy implements InvocationHandler {
     }
 
     public synchronized static <T extends LocalizableResource> T create(Class<T> cls) {
-        LocaleProxy handler;
+        InvocationHandler handler;
         if (Messages.class.isAssignableFrom(cls)) {
-            handler = new MessagesProxy(cls);
-        } else if (ConstantsWithLookup.class.isAssignableFrom(cls)) {
-            handler = new ConstantsWithLookupProxy(cls);
+            handler = new MessagesProxy(cls, LoggerFactory.getLogger(cls));
         } else if (Constants.class.isAssignableFrom(cls)) {
-            handler = new ConstantsProxy(cls);
+            handler = new ConstantsProxy(cls, LoggerFactory.getLogger(cls));
         } else {
             throw new IllegalArgumentException("Unknown LocalizableResource type of " + cls.getCanonicalName());
         }
-        handler.log = LoggerFactory.getLogger(cls);
+        if (ConstantsWithLookup.class.isAssignableFrom(cls)) {
+            handler = new ConstantsWithLookupProxy(cls, handler);
+        }
         return cls.cast(Proxy.newProxyInstance(getClassLoader(), new Class<?>[]{cls}, handler));
     }
 
