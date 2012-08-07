@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.MissingResourceException;
 import java.util.Set;
 
 /**
@@ -24,7 +25,11 @@ public class ConstantsWithLookupProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if (methods.contains(method.getName()) && args.length == 1) {
-            method = cls.getMethod((String) args[0]);
+            try {
+                method = cls.getMethod((String) args[0]);
+            } catch (NoSuchMethodException e) {
+                throw new MissingResourceException(e.getMessage(), cls.getCanonicalName(), method.getName());
+            }
             args = null;
         }
         return handler.invoke(proxy, method, args);
