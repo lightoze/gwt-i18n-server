@@ -72,7 +72,14 @@ class MessagesProxy extends LocaleProxy {
                 args[i] = n - arg.pluralOffset;
             }
             if (arg.select) {
-                forms = expand(forms, String.valueOf(args[i]), "other");
+                Object value = args[i];
+                String select;
+                if (value instanceof Enum) {
+                    select = ((Enum) value).name();
+                } else {
+                    select = String.valueOf(value);
+                }
+                forms = expand(forms, select, "other");
             }
         }
         String message = null;
@@ -100,7 +107,7 @@ class MessagesProxy extends LocaleProxy {
         return MessageFormat.format(message, args);
     }
 
-    private synchronized MessageDescriptor getDescriptor(Method method) {
+    synchronized MessageDescriptor getDescriptor(Method method) {
         MessageDescriptor desc = descriptors.get(method);
         if (desc == null) {
             desc = new MessageDescriptor();
@@ -155,13 +162,13 @@ class MessagesProxy extends LocaleProxy {
         return desc;
     }
 
-    private class MessageDescriptor {
+    class MessageDescriptor {
         String key;
         Map<String, String> defaults = new HashMap<String, String>();
         MessageArgument[] args;
     }
 
-    private class MessageArgument {
+    class MessageArgument {
         boolean pluralCount;
         int pluralOffset;
         Class<? extends PluralRule> pluralRule;
