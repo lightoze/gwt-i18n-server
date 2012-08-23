@@ -1,5 +1,6 @@
 package com.teklabs.gwt.i18n.server;
 
+import org.apache.commons.lang.LocaleUtils;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
@@ -11,6 +12,9 @@ import java.util.Map;
 public class MessagesExporter {
     public static void main(String[] args) throws Exception {
         Class cls = Class.forName(args[0]);
+        if (args.length > 1) {
+            LocaleProxy.setLocale(LocaleUtils.toLocale(args[1]));
+        }
         MessagesProxy proxy = new MessagesProxy(cls, LoggerFactory.getLogger(MessagesExporter.class));
         for (Method method : cls.getDeclaredMethods()) {
             MessagesProxy.MessageDescriptor descriptor = proxy.getDescriptor(method);
@@ -20,11 +24,13 @@ public class MessagesExporter {
             StringBuilder builder = new StringBuilder();
             for (Map.Entry<String, String> entry : descriptor.defaults.entrySet()) {
                 builder.setLength(0);
-                builder.append(descriptor.key);
+                String key = descriptor.key;
                 if (!entry.getKey().isEmpty()) {
-                    builder.append('[').append(entry.getKey()).append(']');
+                    key += '[' + entry.getKey() + ']';
                 }
-                String value = entry.getValue()
+                builder.append(key);
+
+                String value = proxy.getProperties().getProperty(key, entry.getValue())
                         .replaceAll("\\\\", "\\\\\\\\")
                         .replaceAll("\\n", "\\\\n")
                         .replaceAll("\\r", "\\\\r")
