@@ -21,6 +21,7 @@ public class ConstantsProxyTest {
         Assert.assertEquals(1, getConstants().getInt("primitive"));
         Assert.assertEquals(1, getConstants().primitive());
         Assert.assertEquals(1.0, (Object) getConstants().pi());
+        Assert.assertEquals(1.0, (Object) getConstants().pi());
         {
             Map<String, String> map = getConstants().map();
             Assert.assertEquals(2, map.size());
@@ -28,6 +29,7 @@ public class ConstantsProxyTest {
                 Assert.assertNotNull(entry.getValue());
             }
         }
+        Assert.assertEquals("key1", getConstants().key1());
 
         MessagesProxy.setLocale(new Locale("fi", "FI"));
         Assert.assertEquals(2, getConstants().primitive());
