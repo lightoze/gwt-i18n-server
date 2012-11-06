@@ -20,7 +20,7 @@ public class ConstantsProxy extends LocaleProxy {
         super(cls, log);
     }
 
-    protected static Object cast(String value, Class target) {
+    protected static Object cast(String value, Class target, Properties properties) {
         if (target.isAssignableFrom(Boolean.TYPE) || target.isAssignableFrom(Boolean.class)) {
             return Boolean.valueOf(value);
         } else if (target.isAssignableFrom(Double.TYPE) || target.isAssignableFrom(Double.class)) {
@@ -32,10 +32,10 @@ public class ConstantsProxy extends LocaleProxy {
         } else if (target.isArray() && target.getComponentType().isAssignableFrom(String.class)) {
             return value.split("\\s*(?<!\\\\),\\s*");
         } else if (target.isAssignableFrom(Map.class)) {
-            String[] values = value.split("\\s*(?<!\\\\),\\s*");
+            String[] keys = value.split("\\s*(?<!\\\\),\\s*");
             Map<String, String> map = new HashMap<String, String>();
-            for (int i = 0; (i + 1) < values.length; i += 2) {
-                map.put(values[i], values[i + 1]);
+            for (String key : keys) {
+                map.put(key, properties.getProperty(key));
             }
             return map;
         } else {
@@ -50,7 +50,7 @@ public class ConstantsProxy extends LocaleProxy {
 
         Object returnValue;
         if (properties.containsKey(desc.key)) {
-            returnValue = cast(properties.getProperty(desc.key), method.getReturnType());
+            returnValue = cast(properties.getProperty(desc.key), method.getReturnType(), properties);
         } else {
             if (desc.defaultValue == null) {
                 log.error(String.format("Unlocalized key '%s' for locale '%s'", desc.key, getLocale()));

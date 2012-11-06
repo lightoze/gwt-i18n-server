@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author Vladimir Kulev
@@ -20,7 +21,13 @@ public class ConstantsProxyTest {
         Assert.assertEquals(1, getConstants().getInt("primitive"));
         Assert.assertEquals(1, getConstants().primitive());
         Assert.assertEquals(1.0, (Object) getConstants().pi());
-        Assert.assertEquals(2, getConstants().map().size());
+        {
+            Map<String, String> map = getConstants().map();
+            Assert.assertEquals(2, map.size());
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                Assert.assertNotNull(entry.getValue());
+            }
+        }
 
         MessagesProxy.setLocale(new Locale("fi", "FI"));
         Assert.assertEquals(2, getConstants().primitive());
