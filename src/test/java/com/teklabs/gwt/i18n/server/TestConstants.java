@@ -16,7 +16,7 @@ public interface TestConstants extends ConstantsWithLookup {
     Double pi();
 
     @Constants.DefaultStringMapValue({
-            "a", "b"
+            "a", "b", "c", "d"
     })
     Map<String, String> map();
 

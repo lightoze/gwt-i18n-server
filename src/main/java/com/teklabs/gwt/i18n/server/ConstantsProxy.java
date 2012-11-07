@@ -6,9 +6,7 @@ import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * @author Vladimir Kulev
@@ -20,26 +18,20 @@ public class ConstantsProxy extends LocaleProxy {
         super(cls, log);
     }
 
-    protected static Object cast(String value, Class target, Properties properties) {
+    @SuppressWarnings("unchecked")
+    protected static <T> T cast(String value, Class<T> target) {
         if (target.isAssignableFrom(Boolean.TYPE) || target.isAssignableFrom(Boolean.class)) {
-            return Boolean.valueOf(value);
+            return (T) Boolean.valueOf(value);
         } else if (target.isAssignableFrom(Double.TYPE) || target.isAssignableFrom(Double.class)) {
-            return Double.valueOf(value);
+            return (T) Double.valueOf(value);
         } else if (target.isAssignableFrom(Float.TYPE) || target.isAssignableFrom(Float.class)) {
-            return Float.valueOf(value);
+            return (T) Float.valueOf(value);
         } else if (target.isAssignableFrom(Integer.TYPE) || target.isAssignableFrom(Integer.class)) {
-            return Integer.valueOf(value);
+            return (T) Integer.valueOf(value);
         } else if (target.isArray() && target.getComponentType().isAssignableFrom(String.class)) {
-            return value.split("\\s*(?<!\\\\),\\s*");
-        } else if (target.isAssignableFrom(Map.class)) {
-            String[] keys = value.split("\\s*(?<!\\\\),\\s*");
-            Map<String, String> map = new HashMap<String, String>();
-            for (String key : keys) {
-                map.put(key, properties.getProperty(key));
-            }
-            return map;
+            return (T) value.split("\\s*(?<!\\\\),\\s*");
         } else {
-            return value;
+            return (T) value;
         }
     }
 
@@ -49,11 +41,36 @@ public class ConstantsProxy extends LocaleProxy {
         Properties properties = getProperties();
 
         Object returnValue;
+        if (method.getReturnType().isAssignableFrom(Map.class)) {
+            Collection<String> keys;
+            Map<String, String> defaultMap = (Map<String, String>) desc.defaultValue;
+            if (properties.containsKey(desc.key)) {
+                keys = Arrays.asList(cast(properties.getProperty(desc.key), String[].class));
+            } else if (defaultMap != null) {
+                keys = defaultMap.keySet();
+            } else {
+                logMissingKey(desc.key);
+                return null;
+            }
+            Map<String, String> map = new HashMap<String, String>(keys.size());
+            for (String key : keys) {
+                if (properties.containsKey(key)) {
+                    map.put(key, properties.getProperty(key));
+                } else {
+                    String value = defaultMap != null ? defaultMap.get(key) : null;
+                    if (value == null) {
+                        logMissingKey(key);
+                    }
+                    map.put(key, value);
+                }
+            }
+            return map;
+        }
         if (properties.containsKey(desc.key)) {
-            returnValue = cast(properties.getProperty(desc.key), method.getReturnType(), properties);
+            returnValue = cast(properties.getProperty(desc.key), method.getReturnType());
         } else {
             if (desc.defaultValue == null) {
-                log.error(String.format("Unlocalized key '%s' for locale '%s'", desc.key, getLocale()));
+                logMissingKey(desc.key);
             }
             returnValue = desc.defaultValue;
         }
@@ -67,6 +84,10 @@ public class ConstantsProxy extends LocaleProxy {
         }
 
         return returnValue;
+    }
+
+    private void logMissingKey(String key) {
+        log.error(String.format("Unlocalized key '%s' for locale '%s'", key, getLocale()));
     }
 
     private synchronized ConstantDescriptor getDescriptor(Method method) {
