@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.Date;
+import java.util.Calendar;
 import java.util.Locale;
 
 /**
@@ -53,8 +53,10 @@ public class MessagesProxyTest {
 
     @Test
     public void dates() {
-        MessagesProxy.setLocale(new Locale("en"));
-        Assert.assertEquals("Today is January 1, 1970", getMessages().today(new Date(0)));
+        MessagesProxy.setLocale(new Locale("en_US"));
+        Calendar cal = Calendar.getInstance();
+        cal.set( 1970, Calendar.JANUARY, 1, 0, 0, 0 );
+        Assert.assertEquals("Today is January 1, 1970", getMessages().today(cal.getTime()));
     }
 
     @Test
