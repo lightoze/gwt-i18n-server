@@ -16,7 +16,17 @@ Snapshots - <https://service.teklabs.com/nexus/content/repositories/public-snaps
 
 Releases - <https://service.teklabs.com/nexus/content/repositories/public-releases/>
 
-Latest release (for GWT 2.4):
+Latest release (for GWT 2.5):
+<pre>
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.teklabs.gwt-i18n-server&lt;/groupId&gt;
+        &lt;artifactId&gt;gwt-i18n-server&lt;/artifactId&gt;
+        &lt;version&gt;0.15&lt;/version&gt;
+    &lt;/dependency&gt;
+</pre>
+
+
+GWT 2.4 branch:
 <pre>
     &lt;dependency&gt;
         &lt;groupId&gt;com.teklabs.gwt-i18n-server&lt;/groupId&gt;
