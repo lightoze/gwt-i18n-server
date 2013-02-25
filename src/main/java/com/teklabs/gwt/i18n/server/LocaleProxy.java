@@ -25,16 +25,41 @@ import java.util.*;
  * @author Vladimir Kulev
  */
 public abstract class LocaleProxy implements InvocationHandler {
-    private static final ThreadLocal<Locale> locale = new ThreadLocal<Locale>();
     private static final GwtLocaleFactory gwtLocaleFactory = new GwtLocaleFactoryImpl();
     private static final Class<LocalizableResource> LOCALIZABLE_RESOURCE = LocalizableResource.class;
 
+    private static LocaleProvider localeProvider;
+
+    /**
+     * The locale to use if we are not using a LocaleProvider.
+     */
+    protected Locale locale;
+
     static {
-        LocaleFactory.setFactory(new LocaleProxyProvider());
+        LocaleFactory.setFactory(new LocaleFactory.LocalizedResourceProvider() {
+            @Override
+            public <T extends LocalizableResource> T create(Class<T> cls, Locale localeToUse) {
+                return LocaleProxy.create(cls, localeToUse);
+            }
+        });
+        setLocaleProvider(new ThreadLocalLocaleProvider());
     }
 
+    /**
+     * Call this before using LocaleFactory on the server.
+     */
     public static void initialize() {
-        // call this before using LocaleFactory
+        // no op
+    }
+
+    /**
+     * Sets a locale provider. This can be null. If it is, we assume you are passing in the locale to the factory
+     * method.
+     *
+     * @param localeProvider locale provider
+     */
+    public static void setLocaleProvider(LocaleProvider localeProvider) {
+        LocaleProxy.localeProvider = localeProvider;
     }
 
     protected Class<? extends LocalizableResource> cls;
@@ -42,9 +67,10 @@ public abstract class LocaleProxy implements InvocationHandler {
     private final ReflectionMessageInterface messageInterface;
     private final Map<Locale, Properties> properties = new HashMap<Locale, Properties>();
 
-    protected LocaleProxy(Class<? extends LocalizableResource> cls, Logger log) {
+    protected LocaleProxy(Class<? extends LocalizableResource> cls, Logger log, Locale locale) {
         this.cls = cls;
         this.log = log;
+        this.locale = locale;
         messageInterface = new ReflectionMessageInterface(gwtLocaleFactory, cls);
     }
 
@@ -52,12 +78,12 @@ public abstract class LocaleProxy implements InvocationHandler {
         return Thread.currentThread().getContextClassLoader();
     }
 
-    public synchronized static <T extends LocalizableResource> T create(Class<T> cls) {
+    public synchronized static <T extends LocalizableResource> T create(Class<T> cls, Locale locale) {
         InvocationHandler handler;
         if (Messages.class.isAssignableFrom(cls)) {
-            handler = new MessagesProxy(cls, LoggerFactory.getLogger(cls));
+            handler = new MessagesProxy(cls, LoggerFactory.getLogger(cls), locale);
         } else if (Constants.class.isAssignableFrom(cls)) {
-            handler = new ConstantsProxy(cls, LoggerFactory.getLogger(cls));
+            handler = new ConstantsProxy(cls, LoggerFactory.getLogger(cls), locale);
         } else {
             throw new IllegalArgumentException("Unknown LocalizableResource type of " + cls.getCanonicalName());
         }
@@ -67,16 +93,12 @@ public abstract class LocaleProxy implements InvocationHandler {
         return cls.cast(Proxy.newProxyInstance(getClassLoader(), new Class<?>[]{cls}, handler));
     }
 
-    public static Locale getLocale() {
-        return locale.get() == null ? Locale.ROOT : locale.get();
-    }
-
-    public static void setLocale(Locale l) {
-        locale.set(l);
-    }
-
-    public static void clear() {
-        locale.remove();
+    protected Locale getLocale() {
+        if (locale != null) {
+            return locale;
+        } else {
+            return localeProvider.getLocale();
+        }
     }
 
     private static List<String> getLocaleSearchList(Locale locale) {
@@ -151,12 +173,5 @@ public abstract class LocaleProxy implements InvocationHandler {
 
     protected String getKey(Method method) {
         return new ReflectionMessage(gwtLocaleFactory, messageInterface, method).getKey();
-    }
-
-    public static class LocaleProxyProvider implements LocaleFactory.LocaleProvider {
-        @Override
-        public <T extends LocalizableResource> T create(Class<T> cls) {
-            return LocaleProxy.create(cls);
-        }
     }
 }

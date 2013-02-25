@@ -13,9 +13,9 @@ public class MessagesExporter {
     public static void main(String[] args) throws Exception {
         Class cls = Class.forName(args[0]);
         if (args.length > 1) {
-            LocaleProxy.setLocale(LocaleUtils.toLocale(args[1]));
+            ThreadLocalLocaleProvider.setLocale(LocaleUtils.toLocale(args[1]));
         }
-        MessagesProxy proxy = new MessagesProxy(cls, LoggerFactory.getLogger(MessagesExporter.class));
+        MessagesProxy proxy = new MessagesProxy(cls, LoggerFactory.getLogger(MessagesExporter.class), null);
         for (Method method : cls.getDeclaredMethods()) {
             MessagesProxy.MessageDescriptor descriptor = proxy.getDescriptor(method);
             if (descriptor.defaults.isEmpty()) {

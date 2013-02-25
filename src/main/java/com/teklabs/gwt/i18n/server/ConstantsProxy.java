@@ -14,8 +14,8 @@ import java.util.*;
 public class ConstantsProxy extends LocaleProxy {
     private Map<Method, ConstantDescriptor> descriptors = new HashMap<Method, ConstantDescriptor>();
 
-    protected ConstantsProxy(Class<? extends LocalizableResource> cls, Logger log) {
-        super(cls, log);
+    protected ConstantsProxy(Class<? extends LocalizableResource> cls, Logger log, Locale locale) {
+        super(cls, log, locale);
     }
 
     @SuppressWarnings("unchecked")

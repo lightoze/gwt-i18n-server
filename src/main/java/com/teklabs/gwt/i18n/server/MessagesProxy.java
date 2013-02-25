@@ -18,8 +18,8 @@ class MessagesProxy extends LocaleProxy {
     private final Map<Object, PluralRule> rules = new HashMap<Object, PluralRule>();
     private final Map<Method, MessageDescriptor> descriptors = new HashMap<Method, MessageDescriptor>();
 
-    protected MessagesProxy(Class<? extends LocalizableResource> cls, Logger log) {
-        super(cls, log);
+    protected MessagesProxy(Class<? extends LocalizableResource> cls, Logger log, Locale locale) {
+        super(cls, log, locale);
     }
 
     private synchronized PluralRule getRule(Class<? extends PluralRule> cls) {

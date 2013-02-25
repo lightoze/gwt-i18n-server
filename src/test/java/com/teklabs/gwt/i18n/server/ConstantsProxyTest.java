@@ -2,6 +2,7 @@ package com.teklabs.gwt.i18n.server;
 
 import com.teklabs.gwt.i18n.client.LocaleFactory;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Locale;
@@ -15,9 +16,14 @@ public class ConstantsProxyTest {
         return LocaleFactory.get(TestConstants.class);
     }
 
+    @BeforeClass
+    public static void init() {
+        LocaleProxy.initialize();
+    }
+
     @Test
     public void test() {
-        MessagesProxy.setLocale(new Locale("en"));
+        ThreadLocalLocaleProvider.setLocale(new Locale("en"));
         Assert.assertEquals(1, getConstants().getInt("primitive"));
         Assert.assertEquals(1, getConstants().primitive());
         Assert.assertEquals(1.0, getConstants().getDouble("pi"), 0);
@@ -31,7 +37,7 @@ public class ConstantsProxyTest {
         }
         Assert.assertEquals("value1", getConstants().key1());
 
-        MessagesProxy.setLocale(new Locale("fi", "FI"));
+        ThreadLocalLocaleProvider.setLocale(new Locale("fi", "FI"));
         Assert.assertEquals(2, getConstants().primitive());
         Assert.assertEquals(3.14, getConstants().getDouble("pi"), 0);
         Assert.assertEquals(3.14, getConstants().pi(), 0);
