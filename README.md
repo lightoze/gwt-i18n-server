@@ -21,7 +21,7 @@ Latest release (for GWT 2.5):
     &lt;dependency&gt;
         &lt;groupId&gt;com.teklabs.gwt-i18n-server&lt;/groupId&gt;
         &lt;artifactId&gt;gwt-i18n-server&lt;/artifactId&gt;
-        &lt;version&gt;0.16&lt;/version&gt;
+        &lt;version&gt;0.17&lt;/version&gt;
     &lt;/dependency&gt;
 </pre>
 
