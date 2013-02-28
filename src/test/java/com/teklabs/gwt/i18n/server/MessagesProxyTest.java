@@ -62,7 +62,7 @@ public class MessagesProxyTest {
 
     @Test
     public void datesWithProvidedLocale() {
-        TestMessages testMessages = LocaleFactory.get(TestMessages.class, Locale.ENGLISH);
+        TestMessages testMessages = LocaleFactory.get(TestMessages.class, "en");
         Calendar cal = Calendar.getInstance();
         cal.set( 1970, Calendar.JANUARY, 1, 0, 0, 0 );
         Assert.assertEquals("Today is January 1, 1970", testMessages.today(cal.getTime()));

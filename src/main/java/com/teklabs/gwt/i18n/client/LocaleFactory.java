@@ -3,7 +3,6 @@ package com.teklabs.gwt.i18n.client;
 import com.google.gwt.i18n.client.LocalizableResource;
 
 import java.util.HashMap;
-import java.util.Locale;
 
 /**
  * @author Vladimir Kulev
@@ -22,7 +21,7 @@ public class LocaleFactory {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T extends LocalizableResource> T get(Class<T> cls, Locale locale) {
+    public static <T extends LocalizableResource> T get(Class<T> cls, String locale) {
         String key = cacheKey(cls, locale);
         T m = (T) cache.get(key);
         if (m != null) {
@@ -43,11 +42,15 @@ public class LocaleFactory {
         }
     }
 
-    public static <T extends LocalizableResource> void put(Class<T> cls, Locale locale, T m) {
+    public static <T extends LocalizableResource> void put(Class<T> cls, T m) {
+        put(cls, null, m);
+    }
+
+    public static <T extends LocalizableResource> void put(Class<T> cls, String locale, T m) {
         cache.put(cacheKey(cls, locale), m);
     }
 
-    private static <T extends LocalizableResource> String cacheKey(Class<T> cls, Locale locale) {
+    private static <T extends LocalizableResource> String cacheKey(Class<T> cls, String locale) {
         return cls.getName() + '|' + locale;
     }
 
@@ -59,6 +62,6 @@ public class LocaleFactory {
          * Create the resource using the Locale provided. If the locale is null, the locale is retrieved from the
          * LocaleProvider in LocaleProxy.
          */
-        <T extends LocalizableResource> T create(Class<T> cls, Locale locale);
+        <T extends LocalizableResource> T create(Class<T> cls, String locale);
     }
 }

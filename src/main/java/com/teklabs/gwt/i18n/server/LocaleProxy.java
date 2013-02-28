@@ -38,8 +38,8 @@ public abstract class LocaleProxy implements InvocationHandler {
     static {
         LocaleFactory.setFactory(new LocaleFactory.LocalizedResourceProvider() {
             @Override
-            public <T extends LocalizableResource> T create(Class<T> cls, Locale localeToUse) {
-                return LocaleProxy.create(cls, localeToUse);
+            public <T extends LocalizableResource> T create(Class<T> cls, String locale) {
+                return LocaleProxy.create(cls, locale == null ? null : new Locale(locale));
             }
         });
         setLocaleProvider(new ThreadLocalLocaleProvider());
