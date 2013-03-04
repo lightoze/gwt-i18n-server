@@ -7,7 +7,14 @@
     <version>0.18-SNAPSHOT</version>
     <packaging>jar</packaging>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
     <name>GWT I18n server-side implementation</name>
+    <description>A project to make GWT localization available on server-side.</description>
     <url>https://github.com/lightoze/gwt-i18n-server</url>
     <licenses>
         <license>
@@ -47,6 +54,14 @@
         <connection>scm:git:git://github.com/lightoze/gwt-i18n-server.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/lightoze/gwt-i18n-server.git</developerConnection>
     </scm>
+
+    <developers>
+        <developer>
+            <id>lightoze</id>
+            <name>Vladimir Kulev</name>
+            <email>me@lightoze.net</email>
+        </developer>
+    </developers>
 
     <dependencies>
         <!-- Web -->
@@ -198,6 +213,23 @@
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.1</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <useAgent>true</useAgent>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
