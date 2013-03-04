@@ -1,4 +1,4 @@
-package com.teklabs.gwt.i18n.server;
+package net.lightoze.gwt.i18n.server;
 
 import com.google.gwt.i18n.client.LocalizableResource;
 import com.google.gwt.i18n.client.Messages;

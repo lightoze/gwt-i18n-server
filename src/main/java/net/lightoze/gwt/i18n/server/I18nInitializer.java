@@ -1,4 +1,4 @@
-package com.teklabs.gwt.i18n.server;
+package net.lightoze.gwt.i18n.server;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;

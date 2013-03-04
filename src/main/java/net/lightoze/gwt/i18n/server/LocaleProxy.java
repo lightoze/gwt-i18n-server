@@ -1,4 +1,4 @@
-package com.teklabs.gwt.i18n.server;
+package net.lightoze.gwt.i18n.server;
 
 import com.google.gwt.i18n.client.Constants;
 import com.google.gwt.i18n.client.ConstantsWithLookup;
@@ -9,7 +9,7 @@ import com.google.gwt.i18n.server.impl.ReflectionMessage;
 import com.google.gwt.i18n.server.impl.ReflectionMessageInterface;
 import com.google.gwt.i18n.shared.GwtLocale;
 import com.google.gwt.i18n.shared.GwtLocaleFactory;
-import com.teklabs.gwt.i18n.client.LocaleFactory;
+import net.lightoze.gwt.i18n.client.LocaleFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

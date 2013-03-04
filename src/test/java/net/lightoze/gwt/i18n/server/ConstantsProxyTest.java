@@ -1,6 +1,6 @@
-package com.teklabs.gwt.i18n.server;
+package net.lightoze.gwt.i18n.server;
 
-import com.teklabs.gwt.i18n.client.LocaleFactory;
+import net.lightoze.gwt.i18n.client.LocaleFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
