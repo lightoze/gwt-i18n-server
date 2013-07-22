@@ -93,7 +93,7 @@ public abstract class LocaleProxy implements InvocationHandler {
         return cls.cast(Proxy.newProxyInstance(getClassLoader(), new Class<?>[]{cls}, handler));
     }
 
-    protected Locale getLocale() {
+    public Locale getLocale() {
         if (locale != null) {
             return locale;
         } else {
