@@ -23,7 +23,7 @@ public class ConstantsProxyTest {
 
     @Test
     public void test() {
-        ThreadLocalLocaleProvider.setLocale(new Locale("en"));
+        ThreadLocalLocaleProvider.pushLocale(new Locale("en"));
         Assert.assertEquals(1, getConstants().getInt("primitive"));
         Assert.assertEquals(1, getConstants().primitive());
         Assert.assertEquals(1.0, getConstants().getDouble("pi"), 0);
@@ -37,7 +37,7 @@ public class ConstantsProxyTest {
         }
         Assert.assertEquals("value1", getConstants().key1());
 
-        ThreadLocalLocaleProvider.setLocale(new Locale("fi", "FI"));
+        ThreadLocalLocaleProvider.pushLocale(new Locale("fi", "FI"));
         Assert.assertEquals(2, getConstants().primitive());
         Assert.assertEquals(3.14, getConstants().getDouble("pi"), 0);
         Assert.assertEquals(3.14, getConstants().pi(), 0);

@@ -51,11 +51,11 @@ public class I18nFilter implements Filter {
             locale = servletRequest.getLocale();
         }
 
-        ThreadLocalLocaleProvider.setLocale(locale);
+        ThreadLocalLocaleProvider.pushLocale(locale);
         try {
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
-            ThreadLocalLocaleProvider.clear();
+            ThreadLocalLocaleProvider.popLocale();
         }
     }
 

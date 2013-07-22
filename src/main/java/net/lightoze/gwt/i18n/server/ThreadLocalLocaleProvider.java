@@ -1,23 +1,31 @@
 package net.lightoze.gwt.i18n.server;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.Locale;
 
 /**
  * @author David Parish
  */
 public class ThreadLocalLocaleProvider implements LocaleProvider {
-    private static final ThreadLocal<Locale> locale = new ThreadLocal<Locale>();
+    private static final ThreadLocal<Deque<Locale>> locale = new ThreadLocal<Deque<Locale>>() {
+        @Override
+        protected Deque<Locale> initialValue() {
+            return new LinkedList<Locale>();
+        }
+    };
 
     @Override
     public Locale getLocale() {
-        return locale.get() == null ? Locale.ROOT : locale.get();
+        Locale l = locale.get().peek();
+        return l == null ? Locale.ROOT : l;
     }
 
-    public static void setLocale(Locale l) {
-        locale.set(l);
+    public static void pushLocale(Locale l) {
+        locale.get().push(l);
     }
 
-    public static void clear() {
-        locale.remove();
+    public static void popLocale() {
+        locale.get().pop();
     }
 }

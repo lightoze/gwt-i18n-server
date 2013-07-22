@@ -24,19 +24,19 @@ public class MessagesProxyTest {
 
     @Test
     public void simple() {
-        ThreadLocalLocaleProvider.setLocale(new Locale("fi", "FI", "var"));
+        ThreadLocalLocaleProvider.pushLocale(new Locale("fi", "FI", "var"));
         Assert.assertEquals("Simple текст", getMessages().simple());
     }
 
     @Test
     public void lookup() {
-        ThreadLocalLocaleProvider.setLocale(new Locale("fi", "FI", "var"));
+        ThreadLocalLocaleProvider.pushLocale(new Locale("fi", "FI", "var"));
         Assert.assertEquals("Simple текст", getMessages().getString("simple"));
     }
 
     @Test
     public void plural() {
-        ThreadLocalLocaleProvider.setLocale(new Locale("en"));
+        ThreadLocalLocaleProvider.pushLocale(new Locale("en"));
         Assert.assertEquals("No apples", getMessages().apples(0));
         Assert.assertEquals("An 1 apple", getMessages().apples(1));
         Assert.assertEquals("2 apples", getMessages().apples(2));
@@ -44,7 +44,7 @@ public class MessagesProxyTest {
 
     @Test
     public void select() {
-        ThreadLocalLocaleProvider.setLocale(new Locale("en"));
+        ThreadLocalLocaleProvider.pushLocale(new Locale("en"));
         Assert.assertEquals("One 0 selected", getMessages().select(1, "select one"));
         Assert.assertEquals("Two selected", getMessages().select(2, "select two"));
         Assert.assertEquals("Not two selected", getMessages().select(2, "not select"));
@@ -54,7 +54,7 @@ public class MessagesProxyTest {
 
     @Test
     public void dates() {
-        ThreadLocalLocaleProvider.setLocale(new Locale("en_US"));
+        ThreadLocalLocaleProvider.pushLocale(new Locale("en_US"));
         Calendar cal = Calendar.getInstance();
         cal.set( 1970, Calendar.JANUARY, 1, 0, 0, 0 );
         Assert.assertEquals("Today is January 1, 1970", getMessages().today(cal.getTime()));
@@ -70,7 +70,7 @@ public class MessagesProxyTest {
 
     @Test
     public void inheritance() {
-        ThreadLocalLocaleProvider.setLocale(new Locale("fi"));
+        ThreadLocalLocaleProvider.pushLocale(new Locale("fi"));
         Assert.assertEquals("Perintö 1", getMessages().inheritance1());
         Assert.assertEquals("Perintö 2", getMessages().inheritance2());
         Assert.assertEquals("Inheritance 3", getMessages().inheritance3());

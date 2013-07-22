@@ -13,7 +13,7 @@ public class MessagesExporter {
     public static void main(String[] args) throws Exception {
         Class cls = Class.forName(args[0]);
         if (args.length > 1) {
-            ThreadLocalLocaleProvider.setLocale(LocaleUtils.toLocale(args[1]));
+            ThreadLocalLocaleProvider.pushLocale(LocaleUtils.toLocale(args[1]));
         }
         MessagesProxy proxy = new MessagesProxy(cls, LoggerFactory.getLogger(MessagesExporter.class), null);
         for (Method method : cls.getDeclaredMethods()) {
