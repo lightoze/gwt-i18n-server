@@ -5,7 +5,6 @@ import com.google.gwt.i18n.client.LocalizableResource;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
-import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -37,6 +36,10 @@ public class ConstantsProxy extends LocaleProxy {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        if (args != null && args.length > 0) {
+            throw new IllegalArgumentException();
+        }
+
         ConstantDescriptor desc = getDescriptor(method);
         Properties properties = getProperties();
 
@@ -73,14 +76,6 @@ public class ConstantsProxy extends LocaleProxy {
                 logMissingKey(desc.key);
             }
             returnValue = desc.defaultValue;
-        }
-
-        if (returnValue instanceof String && args != null) {
-            return MessageFormat.format(returnValue.toString(), args);
-        }
-
-        if (args != null) {
-            throw new IllegalArgumentException();
         }
 
         return returnValue;

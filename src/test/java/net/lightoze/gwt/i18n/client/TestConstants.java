@@ -1,4 +1,4 @@
-package net.lightoze.gwt.i18n.server;
+package net.lightoze.gwt.i18n.client;
 
 import com.google.gwt.i18n.client.Constants;
 import com.google.gwt.i18n.client.ConstantsWithLookup;
@@ -10,10 +10,10 @@ import java.util.Map;
  */
 public interface TestConstants extends ConstantsWithLookup {
     @DefaultIntValue(1)
-    int primitive();
+    int count();
 
     @DefaultDoubleValue(1)
-    Double pi();
+    double pi();
 
     @Constants.DefaultStringMapValue({
             "a", "b", "c", "d"

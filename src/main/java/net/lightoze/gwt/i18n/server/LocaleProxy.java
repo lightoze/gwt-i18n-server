@@ -80,15 +80,23 @@ public abstract class LocaleProxy implements InvocationHandler {
 
     public synchronized static <T extends LocalizableResource> T create(Class<T> cls, Locale locale) {
         InvocationHandler handler;
-        if (Messages.class.isAssignableFrom(cls)) {
+        boolean isMessages = Messages.class.isAssignableFrom(cls);
+        boolean isConstants = Constants.class.isAssignableFrom(cls);
+        if (isMessages && isConstants) {
+            throw new IllegalArgumentException(cls.getCanonicalName() + " should not extend both Messages and Constants");
+        }
+        if (isMessages) {
             handler = new MessagesProxy(cls, LoggerFactory.getLogger(cls), locale);
-        } else if (Constants.class.isAssignableFrom(cls)) {
+            if (MessagesWithLookup.class.isAssignableFrom(cls)) {
+                handler = new MessagesWithLookupProxy(cls, handler);
+            }
+        } else if (isConstants) {
             handler = new ConstantsProxy(cls, LoggerFactory.getLogger(cls), locale);
+            if (ConstantsWithLookup.class.isAssignableFrom(cls)) {
+                handler = new ConstantsWithLookupProxy(cls, handler);
+            }
         } else {
             throw new IllegalArgumentException("Unknown LocalizableResource type of " + cls.getCanonicalName());
-        }
-        if (ConstantsWithLookup.class.isAssignableFrom(cls)) {
-            handler = new ConstantsWithLookupProxy(cls, handler);
         }
         return cls.cast(Proxy.newProxyInstance(getClassLoader(), new Class<?>[]{cls}, handler));
     }

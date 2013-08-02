@@ -1,32 +1,28 @@
 package net.lightoze.gwt.i18n.server;
 
-import com.google.gwt.i18n.client.ConstantsWithLookup;
 import com.google.gwt.i18n.client.LocalizableResource;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.MissingResourceException;
-import java.util.Set;
 
 /**
  * @author Vladimir Kulev
  */
-public class ConstantsWithLookupProxy implements InvocationHandler {
-    private final Set<Method> methods;
+public class MessagesWithLookupProxy implements InvocationHandler {
+    private final Method method;
     private final Class<? extends LocalizableResource> cls;
     private final InvocationHandler handler;
 
-    protected ConstantsWithLookupProxy(Class<? extends LocalizableResource> cls, InvocationHandler handler) {
+    protected MessagesWithLookupProxy(Class<? extends LocalizableResource> cls, InvocationHandler handler) {
         this.cls = cls;
         this.handler = handler;
-        methods = new HashSet<Method>(Arrays.asList(ConstantsWithLookup.class.getDeclaredMethods()));
+        method = MessagesWithLookup.class.getDeclaredMethods()[0];
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if (methods.contains(method)) {
+        if (this.method.equals(method)) {
             try {
                 method = cls.getMethod((String) args[0]);
             } catch (NoSuchMethodException e) {

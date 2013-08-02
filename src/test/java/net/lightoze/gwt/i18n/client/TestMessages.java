@@ -1,6 +1,5 @@
-package net.lightoze.gwt.i18n.server;
+package net.lightoze.gwt.i18n.client;
 
-import com.google.gwt.i18n.client.ConstantsWithLookup;
 import com.google.gwt.i18n.client.LocalizableResource;
 import com.google.gwt.i18n.client.Messages;
 
@@ -10,7 +9,8 @@ import java.util.Date;
  * @author Vladimir Kulev
  */
 @LocalizableResource.Generate(format = "com.google.gwt.i18n.rebind.format.PropertiesFormat")
-public interface TestMessages extends Messages, ConstantsWithLookup {
+public interface TestMessages extends Messages {
+    @DefaultMessage("simple")
     String simple();
 
     @PluralText({
@@ -21,10 +21,10 @@ public interface TestMessages extends Messages, ConstantsWithLookup {
 
     @DefaultMessage("One {0} selected")
     @AlternateMessage({
-            "one|select two", "Two selected",
+            "one|TWO", "Two selected",
             "one|other", "Not two selected",
-            "other|select three", "Three selected",
-            "=4|select four", "Four selected"
+            "other|THREE", "Three selected",
+            "=4|FOUR", "Four selected"
     })
     String select(@PluralCount @Offset(1) int n, @Select String select);
 
