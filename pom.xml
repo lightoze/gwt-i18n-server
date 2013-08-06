@@ -7,7 +7,7 @@
 
     <groupId>net.lightoze.gwt-i18n-server</groupId>
     <artifactId>gwt-i18n-server</artifactId>
-    <version>0.19-SNAPSHOT</version>
+    <version>0.19</version>
     <packaging>jar</packaging>
 
     <parent>
@@ -125,7 +125,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.4.1</version>
                     <configuration>
                         <releaseProfiles>release</releaseProfiles>
                     </configuration>
