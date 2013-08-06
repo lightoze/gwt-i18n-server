@@ -2,7 +2,9 @@ package net.lightoze.gwt.i18n.client;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.junit.client.GWTTestCase;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -31,7 +33,13 @@ public class ClientSideTest extends GWTTestCase {
 
     public void testScriptMode() {
         assertTrue("GWT not in JavaScript mode", GWT.isScript());
+    }
+
+    public void testSimple() {
         assertEquals("simple", getMessages().simple());
+        assertEquals("Str: {0}", getMessages().substring("{0}"));
+        assertEquals("Str: {1}", getMessages().substring("{1}"));
+        assertEquals("Str: {\\|test}", getMessages().substring("{\\|test}"));
     }
 
     public void testPlural() {
@@ -61,6 +69,11 @@ public class ClientSideTest extends GWTTestCase {
             assertEquals("value2", map.get("key2"));
         }
         assertEquals("value1", getConstants().key1());
+    }
 
+    public void testDate() {
+        Date date = new Date(0l);
+        CalendarUtil.setToFirstDayOfMonth(date);
+        assertEquals("Today is January 1, 1970", getMessages().today(date));
     }
 }

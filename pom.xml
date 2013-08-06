@@ -17,7 +17,7 @@
     </parent>
 
     <name>GWT I18n server-side implementation</name>
-    <description>A project to make GWT localization available on server-side.</description>
+    <description>A project to make GWT localization available on server side.</description>
     <url>https://github.com/lightoze/gwt-i18n-server</url>
     <licenses>
         <license>

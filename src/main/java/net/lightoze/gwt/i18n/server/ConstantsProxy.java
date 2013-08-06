@@ -82,7 +82,7 @@ public class ConstantsProxy extends LocaleProxy {
     }
 
     private void logMissingKey(String key) {
-        log.error(String.format("Unlocalized key '%s' for locale '%s'", key, getLocale()));
+        log.error(String.format("Unlocalized key '%s' for locale '%s'", key, getCurrentLocale()));
     }
 
     private synchronized ConstantDescriptor getDescriptor(Method method) {

@@ -31,6 +31,9 @@ public interface TestMessages extends Messages {
     @DefaultMessage("Today is {0,date,long}")
     String today(Date today);
 
+    @DefaultMessage("Str: {0}")
+    String substring(String str);
+
     String inheritance1();
 
     String inheritance2();

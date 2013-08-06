@@ -25,12 +25,12 @@ class MessagesProxy extends LocaleProxy {
     private synchronized PluralRule getRule(Class<? extends PluralRule> cls) {
         try {
             if (cls.isAssignableFrom(PluralRule.class)) {
-                PluralRule rule = rules.get(getLocale());
+                PluralRule rule = rules.get(getCurrentLocale());
                 if (rule == null) {
                     rule = (PluralRule) getClassLoader().loadClass(
-                            DefaultRule.class.getCanonicalName() + '_' + getLocale().getLanguage()
+                            DefaultRule.class.getCanonicalName() + '_' + getCurrentLocale().getLanguage()
                     ).newInstance();
-                    rules.put(getLocale(), rule);
+                    rules.put(getCurrentLocale(), rule);
                 }
                 return rule;
             } else {
@@ -101,10 +101,10 @@ class MessagesProxy extends LocaleProxy {
             }
         }
         if (message == null) {
-            log.error(String.format("Unlocalized key '%s(%s)' for locale '%s'", desc.key, forms.get(0), getLocale()));
+            log.error(String.format("Unlocalized key '%s(%s)' for locale '%s'", desc.key, forms.get(0), getCurrentLocale()));
             message = '@' + desc.key;
         }
-        return MessageFormat.format(message, args);
+        return new MessageFormat(message, getCurrentLocale()).format(args);
     }
 
     synchronized MessageDescriptor getDescriptor(Method method) {
