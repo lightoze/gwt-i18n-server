@@ -1,10 +1,12 @@
 # Usage
-You can use `LocaleFactory.get(Class<T extends LocalizableResource> cls)` to obtain `Messages`, `Constants` or `ConstantsWithLookup` both on server and client-side.
+You can use `LocaleFactory.get(Class<T extends LocalizableResource> cls)` to obtain `Messages`, `Constants` or `ConstantsWithLookup` both on server and client side.
 
 ### Server
 Add `I18nFilter` to `web.xml` or use `ThreadLocalLocaleProvider.setLocale()` with `ThreadLocalLocaleProvider.clear()` to manually set thread-local locale.
 
 Make sure you are executing `LocaleProxy.initialize()` before any `LocaleFactory` calls, or you will get "Messages not found" exception. An option to do this is to add `I18nInitializer` listener to your `web.xml`.
+
+Also there are a couple of additional server-only features like `MessagesWithLookup` interface and *encoding* proxies, which allow you to use localization in a more dynamic way.
 
 ### Client
 Add `<inherits name="net.lightoze.gwt.i18n.GwtI18nServer"/>` to your GWT XML module descriptor.
@@ -21,7 +23,7 @@ Latest release (for GWT 2.5):
     &lt;dependency&gt;
         &lt;groupId&gt;net.lightoze.gwt-i18n-server&lt;/groupId&gt;
         &lt;artifactId&gt;gwt-i18n-server&lt;/artifactId&gt;
-        &lt;version&gt;0.18&lt;/version&gt;
+        &lt;version&gt;0.19&lt;/version&gt;
     &lt;/dependency&gt;
 </pre>
 
