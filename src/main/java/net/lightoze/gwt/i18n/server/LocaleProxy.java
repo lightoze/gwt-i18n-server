@@ -79,6 +79,10 @@ public abstract class LocaleProxy implements InvocationHandler {
         LocaleProxy.localeProvider = localeProvider;
     }
 
+    public static LocaleProvider getLocaleProvider() {
+        return localeProvider;
+    }
+
     protected Class<? extends LocalizableResource> cls;
     protected Logger log;
     private final ReflectionMessageInterface messageInterface;
@@ -131,7 +135,8 @@ public abstract class LocaleProxy implements InvocationHandler {
     }
 
     public static Locale getLocale() {
-        return localeProvider.getLocale();
+        Locale l = localeProvider.getLocale();
+        return l == null ? Locale.ROOT : l;
     }
 
     private static List<String> getLocaleSearchList(Locale locale) {

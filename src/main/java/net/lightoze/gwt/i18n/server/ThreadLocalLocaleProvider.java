@@ -17,8 +17,7 @@ public class ThreadLocalLocaleProvider implements LocaleProvider {
 
     @Override
     public Locale getLocale() {
-        Locale l = locale.get().peek();
-        return l == null ? Locale.ROOT : l;
+        return locale.get().peek();
     }
 
     public static void pushLocale(Locale l) {

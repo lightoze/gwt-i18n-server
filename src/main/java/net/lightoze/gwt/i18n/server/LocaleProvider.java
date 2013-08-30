@@ -13,7 +13,7 @@ public interface LocaleProvider {
     /**
      * Gets the locale that is currently being used.
      *
-     * @return The Locale being used.
+     * @return The Locale being used or {@code null} if unknown.
      */
     public Locale getLocale();
 }
