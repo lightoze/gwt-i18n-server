@@ -16,28 +16,36 @@ public class MessagesExporter {
             ThreadLocalLocaleProvider.pushLocale(LocaleUtils.toLocale(args[1]));
         }
         MessagesProxy proxy = new MessagesProxy(cls, LoggerFactory.getLogger(MessagesExporter.class), null);
+        StringBuilder builder = new StringBuilder();
         for (Method method : cls.getDeclaredMethods()) {
             MessagesProxy.MessageDescriptor descriptor = proxy.getDescriptor(method);
             if (descriptor.defaults.isEmpty()) {
                 descriptor.defaults.put("", "");
             }
-            StringBuilder builder = new StringBuilder();
             for (Map.Entry<String, String> entry : descriptor.defaults.entrySet()) {
-                builder.setLength(0);
+                if (!entry.getValue().isEmpty()) {
+                    builder.append("# ").append(entry.getValue()).append('\n');
+                }
+
                 String key = descriptor.key;
                 if (!entry.getKey().isEmpty()) {
                     key += '[' + entry.getKey() + ']';
                 }
                 builder.append(key);
 
-                String value = proxy.getProperties().getProperty(key, entry.getValue())
+                String value = proxy.getProperties().getProperty(key);
+                if (value == null) {
+                    System.err.println("Key not localized: " + key);
+                    value = "";
+                }
+                value = value
                         .replaceAll("\\\\", "\\\\\\\\")
                         .replaceAll("\\n", "\\\\n")
                         .replaceAll("\\r", "\\\\r")
                         .replaceAll("\\t", "\\\\t");
-                builder.append('=').append(value).append('\n');
-                System.out.print(builder.toString());
+                builder.append('=').append(value).append("\n\n");
             }
         }
+        System.out.print(builder.toString());
     }
 }
