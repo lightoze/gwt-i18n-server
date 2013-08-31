@@ -161,7 +161,7 @@ public abstract class LocaleProxy implements InvocationHandler {
         return classes;
     }
 
-    private Properties loadBundle(Class clazz, String locale) {
+    private static Properties loadBundle(Class clazz, String locale) {
         InputStream stream = getClassLoader().getResourceAsStream(clazz.getCanonicalName().replace('.', '/') + (locale == null ? "" : "_" + locale) + ".properties");
         Properties props = new Properties();
 
@@ -176,9 +176,9 @@ public abstract class LocaleProxy implements InvocationHandler {
         return props;
     }
 
-    private void loadBundles(Locale locale) {
-        List<String> locales = getLocaleSearchList(locale);
-        List<Class<?>> classes = getClassSearchList(cls);
+    protected Properties loadBundles(Locale locale, boolean searchLocales, boolean searchClasses) {
+        List<String> locales = searchLocales ? getLocaleSearchList(locale) : Arrays.asList(locale == null ? null : locale.toString());
+        List<Class<?>> classes = searchClasses ? getClassSearchList(cls) : Arrays.<Class<?>>asList(cls);
 
         Collections.reverse(classes);
         Collections.reverse(locales);
@@ -189,20 +189,18 @@ public abstract class LocaleProxy implements InvocationHandler {
                 props.putAll(loadBundle(clazz, loc));
             }
         }
-        properties.put(locale, props);
+        return props;
     }
 
     protected Properties getProperties(Locale locale) {
-        if (properties.containsKey(locale)) {
-            return properties.get(locale);
-        }
-        synchronized (properties) {
-            if (properties.containsKey(locale)) {
-                return properties.get(locale);
+        if (!properties.containsKey(locale)) {
+            synchronized (properties) {
+                if (!properties.containsKey(locale)) {
+                    properties.put(locale, loadBundles(locale, true, true));
+                }
             }
-            loadBundles(locale);
-            return properties.get(locale);
         }
+        return properties.get(locale);
     }
 
     protected Properties getProperties() {
