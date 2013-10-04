@@ -23,8 +23,8 @@ public class I18nFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws ServletException, IOException {
-        Locale locale = LocaleUtils.toLocale(servletRequest.getParameter("locale"));
         HttpServletRequest req = (HttpServletRequest) servletRequest;
+        Locale locale = req.getMethod().equals("GET") ? LocaleUtils.toLocale(servletRequest.getParameter("locale")) : null;
         if (locale != null) {
             req.getSession(true).setAttribute("locale", locale);
         } else {
