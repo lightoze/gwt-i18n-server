@@ -1,5 +1,33 @@
 package net.lightoze.gwt.i18n.server;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import net.lightoze.gwt.i18n.client.LocaleFactory;
+
+import org.apache.commons.lang.reflect.MethodUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gwt.i18n.client.Constants;
 import com.google.gwt.i18n.client.ConstantsWithLookup;
 import com.google.gwt.i18n.client.LocalizableResource;
@@ -9,22 +37,6 @@ import com.google.gwt.i18n.server.impl.ReflectionMessage;
 import com.google.gwt.i18n.server.impl.ReflectionMessageInterface;
 import com.google.gwt.i18n.shared.GwtLocale;
 import com.google.gwt.i18n.shared.GwtLocaleFactory;
-import net.lightoze.gwt.i18n.client.LocaleFactory;
-import org.apache.commons.lang.reflect.MethodUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.net.URLDecoder;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author Vladimir Kulev
@@ -255,7 +267,13 @@ public abstract class LocaleProxy implements InvocationHandler {
                 Object obj = LocaleFactory.get(cls, locale.toString());
                 String s = (String) MethodUtils.invokeMethod(obj, method, args.toArray());
                 m.appendReplacement(buf, Matcher.quoteReplacement(s));
-            } catch (ReflectiveOperationException e) {
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }
         }
