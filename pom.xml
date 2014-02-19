@@ -105,7 +105,7 @@
             <resource>
                 <directory>src/main/java</directory>
                 <includes>
-                    <include>com/teklabs/gwt/i18n/client/*.java</include>
+                    <include>net/lightoze/gwt/i18n/client/*.java</include>
                 </includes>
             </resource>
         </resources>
