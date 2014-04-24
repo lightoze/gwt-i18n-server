@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/lightoze/gwt-i18n-server.svg)](https://travis-ci.org/lightoze/gwt-i18n-server)
+
 # Usage
 You can use `LocaleFactory.get(Class<T extends LocalizableResource> cls)` to obtain `Messages`, `Constants` or `ConstantsWithLookup` both on server and client side.
 
