@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URLDecoder;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -90,7 +91,7 @@ public abstract class LocaleProxy implements InvocationHandler {
     protected Class<? extends LocalizableResource> cls;
     protected Logger log;
     private final ReflectionMessageInterface messageInterface;
-    private final Map<Locale, Properties> properties = new HashMap<Locale, Properties>();
+    private final Map<Locale, Map<String, String>> properties = new ConcurrentHashMap<Locale, Map<String, String>>();
 
     protected LocaleProxy(Class<? extends LocalizableResource> cls, Logger log, Locale locale) {
         this.cls = cls;
@@ -180,23 +181,26 @@ public abstract class LocaleProxy implements InvocationHandler {
         return props;
     }
 
-    protected Properties loadBundles(Locale locale, boolean searchLocales, boolean searchClasses) {
+    protected Map<String, String> loadBundles(Locale locale, boolean searchLocales, boolean searchClasses) {
         List<String> locales = searchLocales ? getLocaleSearchList(locale) : Arrays.asList(locale == null ? null : locale.toString());
         List<Class<?>> classes = searchClasses ? getClassSearchList(cls) : Arrays.<Class<?>>asList(cls);
 
         Collections.reverse(classes);
         Collections.reverse(locales);
 
-        Properties props = new Properties();
+        Map<String, String> map = new HashMap<String, String>();
         for (String loc : locales) {
             for (Class clazz : classes) {
-                props.putAll(loadBundle(clazz, loc));
+                Properties bundle = loadBundle(clazz, loc);
+                for (String key : bundle.stringPropertyNames()) {
+                    map.put(key, bundle.getProperty(key));
+                }
             }
         }
-        return props;
+        return Collections.unmodifiableMap(map);
     }
 
-    protected Properties getProperties(Locale locale) {
+    protected Map<String, String> getProperties(Locale locale) {
         if (!properties.containsKey(locale)) {
             synchronized (properties) {
                 if (!properties.containsKey(locale)) {
@@ -207,7 +211,7 @@ public abstract class LocaleProxy implements InvocationHandler {
         return properties.get(locale);
     }
 
-    protected Properties getProperties() {
+    protected Map<String, String> getProperties() {
         return getProperties(getCurrentLocale());
     }
 

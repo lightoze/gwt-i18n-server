@@ -41,14 +41,14 @@ public class ConstantsProxy extends LocaleProxy {
         }
 
         ConstantDescriptor desc = getDescriptor(method);
-        Properties properties = getProperties();
+        Map<String, String> properties = getProperties();
 
         Object returnValue;
         if (method.getReturnType().isAssignableFrom(Map.class)) {
             Collection<String> keys;
             Map<String, String> defaultMap = (Map<String, String>) desc.defaultValue;
             if (properties.containsKey(desc.key)) {
-                keys = Arrays.asList(cast(properties.getProperty(desc.key), String[].class));
+                keys = Arrays.asList(cast(properties.get(desc.key), String[].class));
             } else if (defaultMap != null) {
                 keys = defaultMap.keySet();
             } else {
@@ -58,7 +58,7 @@ public class ConstantsProxy extends LocaleProxy {
             Map<String, String> map = new HashMap<String, String>(keys.size());
             for (String key : keys) {
                 if (properties.containsKey(key)) {
-                    map.put(key, properties.getProperty(key));
+                    map.put(key, properties.get(key));
                 } else {
                     String value = defaultMap != null ? defaultMap.get(key) : null;
                     if (value == null) {
@@ -70,7 +70,7 @@ public class ConstantsProxy extends LocaleProxy {
             return map;
         }
         if (properties.containsKey(desc.key)) {
-            returnValue = cast(properties.getProperty(desc.key), method.getReturnType());
+            returnValue = cast(properties.get(desc.key), method.getReturnType());
         } else {
             if (desc.defaultValue == null) {
                 logMissingKey(desc.key);

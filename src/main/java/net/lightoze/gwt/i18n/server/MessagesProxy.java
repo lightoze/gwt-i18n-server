@@ -84,7 +84,7 @@ class MessagesProxy extends LocaleProxy {
         }
         String message = null;
         forms.add("");
-        Properties properties = getProperties();
+        Map<String, String> properties = getProperties();
         for (String form : forms) {
             if (desc.defaults.containsKey(form)) {
                 message = desc.defaults.get(form);
@@ -93,8 +93,8 @@ class MessagesProxy extends LocaleProxy {
             if (form.length() > 0) {
                 key += '[' + form + ']';
             }
-            if (properties.getProperty(key) != null) {
-                message = properties.getProperty(key);
+            if (properties.get(key) != null) {
+                message = properties.get(key);
             }
             if (message != null) {
                 break;

@@ -17,7 +17,7 @@ public class MessagesExporter {
             locale = LocaleUtils.toLocale(args[1]);
         }
         MessagesProxy proxy = new MessagesProxy(cls, LoggerFactory.getLogger(MessagesExporter.class), null);
-        Properties properties = proxy.loadBundles(locale, true, false);
+        Map<String, String> properties = proxy.loadBundles(locale, true, false);
         HashSet<String> seenMethods = new HashSet<String>();
         HashSet<String> seenKeys = new HashSet<String>();
 
@@ -40,7 +40,7 @@ public class MessagesExporter {
                 }
                 seenKeys.add(key);
 
-                String value = properties.getProperty(key);
+                String value = properties.get(key);
                 if (value == null) {
                     System.err.println("Key not localized: " + key);
                     value = "";
@@ -50,7 +50,7 @@ public class MessagesExporter {
                 write(output, method.getName(), builder.toString());
             }
         }
-        for (String key : properties.stringPropertyNames()) {
+        for (String key : properties.keySet()) {
             if (seenKeys.contains(key)) continue;
             String method = key.replaceFirst("\\[.+\\]", "");
             if (seenMethods.contains(method)) {
@@ -58,7 +58,7 @@ public class MessagesExporter {
             } else {
                 System.err.println("Unused method: " + key);
             }
-            write(output, method, String.format("%s=%s\n\n", key, escape(properties.getProperty(key))));
+            write(output, method, String.format("%s=%s\n\n", key, escape(properties.get(key))));
         }
         Thread.sleep(500); // let stderr to flush
         for (String str : output.values()) {
