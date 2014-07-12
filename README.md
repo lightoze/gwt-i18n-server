@@ -10,6 +10,8 @@ Make sure you are executing `LocaleProxy.initialize()` before any `LocaleFactory
 
 Also there are a couple of additional server-only features like `MessagesWithLookup` interface and *encoding* proxies, which allow you to use localization in a more dynamic way.
 
+__Note:__ Unfortunately GWT-specific message formats (described [here](http://www.gwtproject.org/doc/latest/DevGuideI18nMessages.html#GwtFormats)) are currently not supported.
+
 ### Client
 Add `<inherits name="net.lightoze.gwt.i18n.GwtI18nServer"/>` to your GWT XML module descriptor.
 
