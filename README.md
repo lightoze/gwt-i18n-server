@@ -1,12 +1,12 @@
+[![LGPLv3 License](http://img.shields.io/badge/license-LGPLv3-blue.svg)](https://www.gnu.org/licenses/lgpl.html)
 [![Build Status](https://travis-ci.org/lightoze/gwt-i18n-server.svg)](https://travis-ci.org/lightoze/gwt-i18n-server)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.lightoze.gwt-i18n-server/gwt-i18n-server/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.lightoze.gwt-i18n-server/gwt-i18n-server/)
 
 # Usage
 You can use `LocaleFactory.get(Class<T extends LocalizableResource> cls)` to obtain `Messages`, `Constants` or `ConstantsWithLookup` both on server and client side.
 
 ### Server
 Add `I18nFilter` to `web.xml` or use `ThreadLocalLocaleProvider.setLocale()` with `ThreadLocalLocaleProvider.clear()` to manually set thread-local locale.
-
-Make sure you are executing `LocaleProxy.initialize()` before any `LocaleFactory` calls, or you will get "Messages not found" exception. An option to do this is to add `I18nInitializer` listener to your `web.xml`.
 
 Also there are a couple of additional server-only features like `MessagesWithLookup` interface and *encoding* proxies, which allow you to use localization in a more dynamic way.
 
@@ -22,12 +22,12 @@ Snapshots - <https://oss.sonatype.org/content/groups/public/>
 
 Releases - Maven Central
 
-Latest release (for GWT 2.5):
+Latest release (for GWT 2.6):
 <pre>
     &lt;dependency&gt;
         &lt;groupId&gt;net.lightoze.gwt-i18n-server&lt;/groupId&gt;
         &lt;artifactId&gt;gwt-i18n-server&lt;/artifactId&gt;
-        &lt;version&gt;0.22&lt;/version&gt;
+        &lt;version&gt;0.23&lt;/version&gt;
     &lt;/dependency&gt;
 </pre>
 
