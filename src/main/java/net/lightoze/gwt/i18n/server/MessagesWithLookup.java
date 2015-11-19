@@ -6,18 +6,20 @@ import java.util.MissingResourceException;
 
 /**
  * Like {@link com.google.gwt.i18n.client.ConstantsWithLookup}, but for {@link Messages} interface.
- * <p/>
+ * <p>
  * <strong>Supported only on server side.</strong>
  *
  * @author Vladimir Kulev
  */
 public interface MessagesWithLookup extends Messages {
+
     /**
      * Look up <code>String</code> by method name.
-     * <p/>
+     * <p>
      * <strong>Supported only on server side.</strong>
      *
      * @param methodName method name
+     * @param args       method arguments
      * @return String returned by method
      * @throws java.util.MissingResourceException if methodName is not valid
      */

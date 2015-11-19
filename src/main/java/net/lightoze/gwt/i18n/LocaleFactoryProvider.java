@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 public class LocaleFactoryProvider {
+
     public Map<Class, Map<String, LocalizableResource>> createClassCache() {
         return new WeakHashMap<Class, Map<String, LocalizableResource>>();
     }
@@ -15,6 +16,11 @@ public class LocaleFactoryProvider {
     /**
      * Create the resource using the Locale provided. If the locale is null, the locale is retrieved from the
      * LocaleProvider in LocaleProxy.
+     *
+     * @param cls    localization interface class
+     * @param <T>    localization interface class
+     * @param locale locale string
+     * @return object implementing specified class
      */
     public <T extends LocalizableResource> T create(Class<T> cls, String locale) {
         Locale l = null;

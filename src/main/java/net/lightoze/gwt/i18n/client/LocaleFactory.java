@@ -21,7 +21,7 @@ public class LocaleFactory {
 
     /**
      * Get localization object for <em>current</em> locale.
-     * <p/>
+     * <p>
      * On server side <em>current</em> locale is determined dynamically by {@link net.lightoze.gwt.i18n.server.LocaleProvider} and can change in runtime for the same object.
      *
      * @param cls localization interface class
@@ -34,9 +34,9 @@ public class LocaleFactory {
 
     /**
      * Get <em>encoding</em> localization object, which will encode all requests so that they can be decoded later by {@link net.lightoze.gwt.i18n.server.LocaleProxy#decode}.
-     * <p/>
+     * <p>
      * The purpose is to separate complex (e.g. template-based) text generation and its localization for particular locale into two separate phases.
-     * <p/>
+     * <p>
      * <strong>Supported only on server side.</strong>
      *
      * @param cls localization interface class
