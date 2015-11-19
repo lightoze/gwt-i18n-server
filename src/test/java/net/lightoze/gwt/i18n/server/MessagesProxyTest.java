@@ -21,7 +21,6 @@ public class MessagesProxyTest {
     @BeforeClass
     public static void init() {
         Locale.setDefault(Locale.ENGLISH);
-        LocaleProxy.initialize();
     }
 
     @Test

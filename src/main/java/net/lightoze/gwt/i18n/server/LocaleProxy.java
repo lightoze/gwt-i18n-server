@@ -41,38 +41,12 @@ public abstract class LocaleProxy implements InvocationHandler {
     private static final GwtLocaleFactory gwtLocaleFactory = new GwtLocaleFactoryImpl();
     private static final Class<LocalizableResource> LOCALIZABLE_RESOURCE = LocalizableResource.class;
 
-    private static LocaleProvider localeProvider;
+    private static LocaleProvider localeProvider = new ThreadLocalLocaleProvider();
 
     /**
      * The locale to use if we are not using a LocaleProvider.
      */
     protected Locale locale;
-
-    static {
-        LocaleFactory.setFactory(new LocaleFactory.LocalizedResourceProvider() {
-            @Override
-            public <T extends LocalizableResource> T create(Class<T> cls, String locale) {
-                Locale l = null;
-                if (locale != null) {
-                    String[] parts = locale.split("_", 3);
-                    l = new Locale(
-                            parts[0],
-                            parts.length > 1 ? parts[1] : "",
-                            parts.length > 2 ? parts[2] : ""
-                    );
-                }
-                return LocaleProxy.create(cls, l);
-            }
-        });
-        setLocaleProvider(new ThreadLocalLocaleProvider());
-    }
-
-    /**
-     * Call this before using LocaleFactory on the server.
-     */
-    public static void initialize() {
-        // no op
-    }
 
     /**
      * Sets a locale provider. This can be null. If it is, we assume you are passing in the locale to the factory

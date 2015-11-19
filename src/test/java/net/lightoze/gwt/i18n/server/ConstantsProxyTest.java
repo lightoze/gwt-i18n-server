@@ -2,7 +2,6 @@ package net.lightoze.gwt.i18n.server;
 
 import net.lightoze.gwt.i18n.client.LocaleFactory;
 import net.lightoze.gwt.i18n.client.TestConstants;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Locale;
@@ -16,11 +15,6 @@ import static org.junit.Assert.assertEquals;
 public class ConstantsProxyTest {
     private TestConstants getConstants() {
         return LocaleFactory.get(TestConstants.class);
-    }
-
-    @BeforeClass
-    public static void init() {
-        LocaleProxy.initialize();
     }
 
     @Test

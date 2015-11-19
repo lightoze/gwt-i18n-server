@@ -13,9 +13,6 @@ import java.util.Locale;
  * @author Vladimir Kulev
  */
 public class I18nFilter implements Filter {
-    static {
-        LocaleProxy.initialize();
-    }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

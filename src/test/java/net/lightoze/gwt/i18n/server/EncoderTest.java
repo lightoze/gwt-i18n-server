@@ -17,7 +17,6 @@ public class EncoderTest {
     @BeforeClass
     public static void init() {
         ThreadLocalLocaleProvider.pushLocale(Locale.ENGLISH);
-        LocaleProxy.initialize();
     }
 
     private TestMessages getMessages() {
