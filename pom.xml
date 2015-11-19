@@ -37,7 +37,7 @@
         <maven.compiler.encoding>${project.build.sourceEncoding}</maven.compiler.encoding>
 
         <!-- Versions -->
-        <version.gwt>2.5.1</version.gwt>
+        <version.gwt>2.6.1</version.gwt>
         <version.javax.servlet>2.5</version.javax.servlet>
         <version.commons-lang>2.6</version.commons-lang>
         <version.slf4j>1.7.5</version.slf4j>

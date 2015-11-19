@@ -1,9 +1,13 @@
 package net.lightoze.gwt.i18n.client;
 
+import com.google.gwt.core.shared.GWT;
+import com.google.gwt.core.shared.GwtIncompatible;
 import com.google.gwt.i18n.client.LocalizableResource;
 import com.google.gwt.i18n.client.Messages;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Factory class for obtaining localization objects.
@@ -11,10 +15,37 @@ import java.util.HashMap;
  * @author Vladimir Kulev
  */
 public class LocaleFactory {
+
     public static final String ENCODER = "ENCODER";
 
     private static LocalizedResourceProvider factory;
-    private static HashMap<String, LocalizableResource> cache = new HashMap<String, LocalizableResource>();
+    private static final Map<Class, Map<String, LocalizableResource>> cache;
+
+    static {
+        CacheFactory cacheFactory;
+        if (GWT.isClient()) {
+            cacheFactory = new CacheFactory();
+        } else {
+            cacheFactory = new JreCacheFactory();
+        }
+        cache = cacheFactory.create();
+    }
+
+    private static class CacheFactory {
+
+        public Map<Class, Map<String, LocalizableResource>> create() {
+            return new HashMap<Class, Map<String, LocalizableResource>>();
+        }
+    }
+
+    private static class JreCacheFactory extends CacheFactory {
+
+        @Override
+        @GwtIncompatible
+        public Map<Class, Map<String, LocalizableResource>> create() {
+            return new WeakHashMap<Class, Map<String, LocalizableResource>>();
+        }
+    }
 
     public static void setFactory(LocalizedResourceProvider factory) {
         LocaleFactory.factory = factory;
@@ -58,13 +89,13 @@ public class LocaleFactory {
      */
     @SuppressWarnings({"unchecked"})
     public static <T extends LocalizableResource> T get(Class<T> cls, String locale) {
-        String key = cacheKey(cls, locale);
-        T m = (T) cache.get(key);
+        Map<String, LocalizableResource> localeCache = getLocaleCache(cls);
+        T m = (T) localeCache.get(locale);
         if (m != null) {
             return m;
         }
-        synchronized (LocaleFactory.class) {
-            m = (T) cache.get(key);
+        synchronized (cache) {
+            m = (T) localeCache.get(locale);
             if (m != null) {
                 return m;
             }
@@ -98,17 +129,33 @@ public class LocaleFactory {
      * @param <T>    localization interface class
      */
     public static <T extends LocalizableResource> void put(Class<T> cls, String locale, T m) {
-        cache.put(cacheKey(cls, locale), m);
+        Map<String, LocalizableResource> localeCache = getLocaleCache(cls);
+        synchronized (cache) {
+            localeCache.put(locale, m);
+        }
     }
 
-    private static <T extends LocalizableResource> String cacheKey(Class<T> cls, String locale) {
-        return cls.getName() + '|' + locale;
+    private static Map<String, LocalizableResource> getLocaleCache(Class<?> cls) {
+        Map<String, LocalizableResource> map = cache.get(cls);
+        if (map != null) {
+            return map;
+        }
+        synchronized (cache) {
+            map = cache.get(cls);
+            if (map != null) {
+                return map;
+            }
+            map = new HashMap<String, LocalizableResource>();
+            cache.put(cls, map);
+            return map;
+        }
     }
 
     /**
      * The interface for the class that provides the class that implements the passed in LocalizedResource
      */
     public static interface LocalizedResourceProvider {
+
         /**
          * Create the resource using the Locale provided. If the locale is null, the locale is retrieved from the
          * LocaleProvider in LocaleProxy.
