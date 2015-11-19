@@ -149,6 +149,7 @@
                 <artifactId>gwt-maven-plugin</artifactId>
                 <version>${version.gwt}</version>
                 <configuration>
+                    <sourceLevel>1.6</sourceLevel>
                     <productionMode>true</productionMode>
                     <mode>htmlunit</mode>
                     <testTimeOut>300</testTimeOut>
