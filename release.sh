@@ -2,6 +2,6 @@
 
 set -o errexit
 
-mvn clean
-mvn -Prelease release:prepare
-mvn -Prelease release:perform
+./mvnw clean
+./mvnw -Prelease release:prepare
+./mvnw -Prelease release:perform
