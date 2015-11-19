@@ -105,7 +105,8 @@
             <resource>
                 <directory>src/main/java</directory>
                 <includes>
-                    <include>net/lightoze/gwt/i18n/client/*.java</include>
+                    <include>net/lightoze/gwt/i18n/client/**/*.java</include>
+                    <include>net/lightoze/gwt/i18n/emul/**/*.java</include>
                 </includes>
             </resource>
         </resources>
@@ -215,6 +216,10 @@
                                                 <include>com/google/gwt/i18n/**/*.class</include>
                                                 <include>com/google/gwt/i18n/**/*.properties</include>
                                             </includes>
+                                            <excludes>
+                                                <exclude>com/google/gwt/i18n/shared/impl/cldr/**/*</exclude>
+                                                <exclude>com/google/gwt/i18n/client/impl/cldr/**/*</exclude>
+                                            </excludes>
                                         </filter>
                                     </filters>
                                     <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
