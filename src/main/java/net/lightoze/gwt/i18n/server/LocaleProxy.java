@@ -13,7 +13,7 @@ import com.google.gwt.i18n.shared.GwtLocaleFactory;
 
 import net.lightoze.gwt.i18n.client.LocaleFactory;
 
-import org.apache.commons.lang.reflect.MethodUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

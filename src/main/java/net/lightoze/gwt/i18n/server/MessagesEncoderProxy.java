@@ -1,7 +1,7 @@
 package net.lightoze.gwt.i18n.server;
 
 import com.google.gwt.i18n.client.LocalizableResource;
-import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Method;

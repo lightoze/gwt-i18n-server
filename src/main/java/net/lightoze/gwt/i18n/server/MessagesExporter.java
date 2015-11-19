@@ -1,6 +1,6 @@
 package net.lightoze.gwt.i18n.server;
 
-import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang3.LocaleUtils;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;

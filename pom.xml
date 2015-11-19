@@ -39,7 +39,7 @@
         <!-- Versions -->
         <version.gwt>2.6.1</version.gwt>
         <version.javax.servlet>2.5</version.javax.servlet>
-        <version.commons-lang>2.6</version.commons-lang>
+        <version.commons-lang3>3.3</version.commons-lang3>
         <version.slf4j>1.7.5</version.slf4j>
         <version.junit>4.11</version.junit>
     </properties>
@@ -76,9 +76,9 @@
 
         <!-- Commons -->
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>${version.commons-lang}</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${version.commons-lang3}</version>
         </dependency>
 
         <!-- Logging -->
