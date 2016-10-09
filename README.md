@@ -10,7 +10,7 @@ Add `I18nFilter` to `web.xml` or use `ThreadLocalLocaleProvider.setLocale()` wit
 
 Also there are a couple of additional server-only features like `MessagesWithLookup` interface and *encoding* proxies, which allow you to use localization in a more dynamic way.
 
-__Note:__ Unfortunately GWT-specific message formats (described [here](http://www.gwtproject.org/doc/latest/DevGuideI18nMessages.html#GwtFormats)) are currently not supported.
+__Note:__ Unfortunately GWT-specific message formats (described [here](http://www.gwtproject.org/doc/latest/DevGuideI18nMessages.html#GwtFormats)) are currently not supported except for the "static argument" format (`{startBold,<b>}`).
 
 ### Client
 Add `<inherits name="net.lightoze.gwt.i18n.GwtI18nServer"/>` to your GWT XML module descriptor.
@@ -27,7 +27,7 @@ Latest release (for GWT 2.6):
     &lt;dependency&gt;
         &lt;groupId&gt;net.lightoze.gwt-i18n-server&lt;/groupId&gt;
         &lt;artifactId&gt;gwt-i18n-server&lt;/artifactId&gt;
-        &lt;version&gt;0.23&lt;/version&gt;
+        &lt;version&gt;0.24&lt;/version&gt;
     &lt;/dependency&gt;
 </pre>
 
