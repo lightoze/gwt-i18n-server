@@ -48,7 +48,7 @@ public class EncoderTest {
     public void escapedParams() {
         String str = getMessages().substring("{\\0?#&}");
         assertEquals("{net.lightoze.gwt.i18n.client.TestMessages#substring?s=%7B%5C0%3F%23%26%7D}", str);
-        assertEquals("Str: {\\0?#&}", LocaleProxy.decode(str));
+        assertEquals("Str: <b>{\\0?#&}</b>", LocaleProxy.decode(str));
     }
 
     @Test

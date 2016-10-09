@@ -10,6 +10,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Vladimir Kulev
@@ -59,6 +61,20 @@ class MessagesProxy extends LocaleProxy {
         return result;
     }
 
+    private static String cleanupFormat(String format) {
+        Matcher matcher = Pattern.compile("\\{[^,}]*[^,}0-9][^,}]*,(([^}\\\\]|\\\\.)*)\\}").matcher(format);
+        if (matcher.find()) {
+            StringBuffer buffer = new StringBuffer();
+            do {
+                matcher.appendReplacement(buffer, matcher.group(1));
+            } while (matcher.find());
+            matcher.appendTail(buffer);
+            return buffer.toString();
+        } else {
+            return format;
+        }
+    }
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         MessageDescriptor desc = getDescriptor(method);
@@ -103,6 +119,18 @@ class MessagesProxy extends LocaleProxy {
         if (message == null) {
             log.error(String.format("Unlocalized key '%s(%s)' for locale '%s'", desc.key, forms.get(0), getCurrentLocale()));
             message = '@' + desc.key;
+            if (desc.args.length > 0) {
+                message += '(';
+                for (int i = 0; i < desc.args.length; i++) {
+                    if (i > 0) {
+                        message += ',';
+                    }
+                    message += '{' + Integer.toString(i) + '}';
+                }
+                message += ')';
+            }
+        } else {
+            message = cleanupFormat(message);
         }
         return new MessageFormat(message, getCurrentLocale()).format(args);
     }

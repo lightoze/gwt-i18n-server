@@ -37,9 +37,9 @@ public class ClientSideTest extends GWTTestCase {
 
     public void testSimple() {
         assertEquals("simple", getMessages().simple());
-        assertEquals("Str: {0}", getMessages().substring("{0}"));
-        assertEquals("Str: {1}", getMessages().substring("{1}"));
-        assertEquals("Str: {\\|test}", getMessages().substring("{\\|test}"));
+        assertEquals("Str: <b>{0}</b>", getMessages().substring("{0}"));
+        assertEquals("Str: <b>{1}</b>", getMessages().substring("{1}"));
+        assertEquals("Str: <b>{\\|test}</b>", getMessages().substring("{\\|test}"));
     }
 
     public void testPlural() {
