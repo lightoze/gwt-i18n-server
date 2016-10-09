@@ -7,7 +7,7 @@
 
     <groupId>net.lightoze.gwt-i18n-server</groupId>
     <artifactId>gwt-i18n-server</artifactId>
-    <version>0.24-SNAPSHOT</version>
+    <version>0.24</version>
     <packaging>jar</packaging>
 
     <parent>
