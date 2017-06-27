@@ -6,7 +6,7 @@
 You can use `LocaleFactory.get(Class<T extends LocalizableResource> cls)` to obtain `Messages`, `Constants` or `ConstantsWithLookup` both on server and client side.
 
 ### Server
-Add `I18nFilter` to `web.xml` or use `ThreadLocalLocaleProvider.setLocale()` with `ThreadLocalLocaleProvider.clear()` to manually set thread-local locale.
+Add `I18nFilter` to `web.xml` or use `ThreadLocalLocaleProvider.pushLocale(Locale)` with `ThreadLocalLocaleProvider.popLocale()` to manually set thread-local locale.
 
 Also there are a couple of additional server-only features like `MessagesWithLookup` interface and *encoding* proxies, which allow you to use localization in a more dynamic way.
 
