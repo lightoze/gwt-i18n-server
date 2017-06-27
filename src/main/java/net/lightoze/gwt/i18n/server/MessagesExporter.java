@@ -1,5 +1,8 @@
 package net.lightoze.gwt.i18n.server;
 
+import javassist.ClassPool;
+import javassist.CtMethod;
+import javassist.NotFoundException;
 import org.apache.commons.lang3.LocaleUtils;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +13,7 @@ import java.util.*;
  * @author Vladimir Kulev
  */
 public class MessagesExporter {
+
     public static void main(String[] args) throws Exception {
         Class cls = Class.forName(args[0]);
         Locale locale = null;
@@ -21,8 +25,19 @@ public class MessagesExporter {
         HashSet<String> seenMethods = new HashSet<String>();
         HashSet<String> seenKeys = new HashSet<String>();
 
+        Comparator<Method> comparator;
+        try {
+            Class<?> cmp = Class.forName("net.lightoze.gwt.i18n.server.MessagesExporter.DeclarationOrderComparator");
+            //noinspection unchecked
+            comparator = (Comparator<Method>) cmp.getConstructor(Class.class).newInstance(cls);
+        } catch (ClassNotFoundException e) {
+            comparator = Comparator.comparing(m -> m.getName() + "#" + m.getParameterCount());
+        }
+
         LinkedHashMap<String, String> output = new LinkedHashMap<String, String>();
-        for (Method method : cls.getDeclaredMethods()) {
+        Method[] methods = cls.getDeclaredMethods();
+        Arrays.sort(methods, comparator);
+        for (Method method : methods) {
             seenMethods.add(method.getName());
             MessagesProxy.MessageDescriptor descriptor = proxy.getDescriptor(method);
             if (descriptor.defaults.isEmpty()) {
@@ -75,5 +90,26 @@ public class MessagesExporter {
                 .replaceAll("\\n", "\\\\n")
                 .replaceAll("\\r", "\\\\r")
                 .replaceAll("\\t", "\\\\t");
+    }
+
+    private static class DeclarationOrderComparator implements Comparator<Method> {
+
+        private Map<String, Integer> index = new HashMap<>();
+
+        public DeclarationOrderComparator(Class cls) throws NotFoundException {
+            int i = 0;
+            for (CtMethod method : ClassPool.getDefault().get(cls.getName()).getDeclaredMethods()) {
+                index.put(method.getName() + "#" + method.getParameterTypes().length, i++);
+            }
+        }
+
+        private int index(Method m) {
+            return index.getOrDefault(m.getName() + "#" + m.getParameterCount(), 0);
+        }
+
+        @Override
+        public int compare(Method m1, Method m2) {
+            return Integer.compare(index(m1), index(m2));
+        }
     }
 }
