@@ -22,12 +22,12 @@ Snapshots - <https://oss.sonatype.org/content/groups/public/>
 
 Releases - Maven Central
 
-Latest release (for GWT 2.6):
+Latest release (for GWT 2.8.1):
 <pre>
     &lt;dependency&gt;
         &lt;groupId&gt;net.lightoze.gwt-i18n-server&lt;/groupId&gt;
         &lt;artifactId&gt;gwt-i18n-server&lt;/artifactId&gt;
-        &lt;version&gt;0.24&lt;/version&gt;
+        &lt;version&gt;0.25&lt;/version&gt;
     &lt;/dependency&gt;
 </pre>
 
