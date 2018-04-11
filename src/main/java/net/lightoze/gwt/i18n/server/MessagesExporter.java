@@ -27,7 +27,7 @@ public class MessagesExporter {
 
         Comparator<Method> comparator;
         try {
-            Class<?> cmp = Class.forName("net.lightoze.gwt.i18n.server.MessagesExporter.DeclarationOrderComparator");
+            Class<?> cmp = Class.forName("net.lightoze.gwt.i18n.server.MessagesExporter$DeclarationOrderComparator");
             //noinspection unchecked
             comparator = (Comparator<Method>) cmp.getConstructor(Class.class).newInstance(cls);
         } catch (ClassNotFoundException e) {
