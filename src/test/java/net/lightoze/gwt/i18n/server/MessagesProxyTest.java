@@ -39,6 +39,12 @@ public class MessagesProxyTest {
     }
 
     @Test
+    public void lookupParams() {
+        ThreadLocalLocaleProvider.pushLocale(new Locale("fi", "FI", ""));
+        assertEquals("Str: <b>hello</b>", getMessages().getString("substring", "hello"));
+    }
+
+    @Test
     public void plural() {
         ThreadLocalLocaleProvider.pushLocale(new Locale("it"));
         assertEquals("Zero apples", getMessages().apples(0));
@@ -68,7 +74,7 @@ public class MessagesProxyTest {
 
     @Test
     public void dates() {
-        ThreadLocalLocaleProvider.pushLocale(new Locale("en_US"));
+        ThreadLocalLocaleProvider.pushLocale(new Locale("en"));
         Calendar cal = Calendar.getInstance();
         cal.set(1970, Calendar.JANUARY, 1, 0, 0, 0);
         assertEquals("Today is January 1, 1970", getMessages().today(cal.getTime()));
